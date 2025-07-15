@@ -1,7 +1,7 @@
 using Ocelot.Config.Attributes;
 using Ocelot.Modules;
 
-namespace PluginTemplate.Modules.{{name}};
+namespace TwistOfFayte.Modules.{{name}};
 
 public class {{name}}Config : ModuleConfig
 {

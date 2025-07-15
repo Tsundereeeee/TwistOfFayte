@@ -1,13 +1,13 @@
 using Ocelot.Modules;
 using Ocelot.Windows;
 
-namespace TwistOfFayte.Modules.{{name}};
+namespace TwistOfFayte.Modules.Target;
 
 [OcelotModule]
-public class {{name}}Module(Plugin plugin, Config config) : Module<Plugin, Config>(plugin, config)
+public class TargetModule(Plugin plugin, Config config) : Module<Plugin, Config>(plugin, config)
 {
-    public override {{name}}Config Config {
-        get => PluginConfig.{{name}}Config;
+    public override TargetConfig Config {
+        get => PluginConfig.TargetConfig;
     }
 
     private Panel panel = new();
