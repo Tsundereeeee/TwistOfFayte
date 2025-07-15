@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/12.0.2">
+    <PropertyGroup>
+        <Version>0.0.0.1</Version>
+        <Description>A Plugin Template</Description>
+        <PackageProjectUrl>https://github.com/OhKannaDuh/PluginTemplate</PackageProjectUrl>
+        <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+        <IsPackable>false</IsPackable>
+        <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+        <NoWarn>$(NoWarn);4014</NoWarn>
+        <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=$(MSBuildProjectName)/</PathMap>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <DefineConstants>DEBUG;TRACE;DEBUG_BUILD</DefineConstants>
+      </PropertyGroup>
+    <!-- Files -->
+    <ItemGroup>
+        <Content Include="..\assets\icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Visible>false</Visible>
+        </Content>
+        <Content Include=".editorconfig" />
+        <None Include="..\Translations\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <Link>Translations\%(RecursiveDir)%(Filename)%(Extension)</Link>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <ProjectReference Include="../Ocelot/Ocelot/Ocelot.csproj"/>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' == 'Release'">
+        <PackageReference Include="FFXIVOcelot" Version="0.38.0"/>
+        <ProjectReference Include="../Ocelot/ffxiv_pictomancy/Pictomancy/Pictomancy.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Dalamud.Common">
+            <HintPath>$(DalamudLibPath)Dalamud.Common.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+</Project>

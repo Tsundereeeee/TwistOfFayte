@@ -1,0 +1,10 @@
+{
+  "windows": {
+    "main": {
+      "title": "PluginTemplate",
+      "buttons": {
+        "toggle_config": "Toggle config window"
+      }
+    }
+  }
+}

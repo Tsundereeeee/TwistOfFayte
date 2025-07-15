@@ -1,0 +1,9 @@
+using Ocelot.Config.Attributes;
+using Ocelot.Modules;
+
+namespace PluginTemplate.Modules.{{name}};
+
+[Title("{{name}} Config")]
+public class {{name}}Config : ModuleConfig
+{
+}
