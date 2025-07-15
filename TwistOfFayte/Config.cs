@@ -2,7 +2,7 @@
 using ECommons.DalamudServices;
 using Ocelot;
 
-namespace PluginTemplate;
+namespace TwistOfFayte;
 
 [Serializable]
 public class Config : IOcelotConfig

@@ -1,6 +1,6 @@
 ﻿using Ocelot.Windows;
 
-namespace PluginTemplate.Windows;
+namespace TwistOfFayte.Windows;
 
 [OcelotMainWindow]
 public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plugin, _config)

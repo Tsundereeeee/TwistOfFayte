@@ -4,7 +4,7 @@ namespace PluginTemplate.Modules.{{name}};
 
 public class Panel
 {
-    public void Draw({{name}}Module module)
+    public void Render(RenderContext context)
     {
         OcelotUI.Title("{{name}}:");
         OcelotUI.Indent(() => {

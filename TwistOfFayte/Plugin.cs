@@ -3,13 +3,13 @@ using ECommons;
 using Ocelot;
 using Ocelot.Chain;
 
-namespace PluginTemplate;
+namespace TwistOfFayte;
 
 public sealed class Plugin : OcelotPlugin
 {
     public override string Name
     {
-        get => "PluginTemplate";
+        get => "TwistOfFayte";
     }
 
     public Config Config { get; }
@@ -21,7 +21,7 @@ public sealed class Plugin : OcelotPlugin
 
     public static ChainQueue Chain
     {
-        get => ChainManager.Get("PluginTemplate.Chain");
+        get => ChainManager.Get("TwistOfFayte.Chain");
     }
 
     public Plugin(IDalamudPluginInterface plugin)
