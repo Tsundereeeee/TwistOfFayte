@@ -84,7 +84,7 @@ csharp_space_between_square_brackets = false
 # ReSharper properties
 resharper_align_linq_query = true
 resharper_align_multiline_argument = true
-resharper_align_multiline_calls_chain = true
+resharper_align_multiline_calls_chain = false
 resharper_align_multiline_expression = true
 resharper_align_multiline_extends_list = true
 resharper_align_multiline_for_stmt = true

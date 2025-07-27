@@ -12,14 +12,14 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <DefineConstants>DEBUG;TRACE;DEBUG_BUILD</DefineConstants>
-      </PropertyGroup>
+    </PropertyGroup>
     <!-- Files -->
     <ItemGroup>
         <Content Include="..\assets\icon.png">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Visible>false</Visible>
         </Content>
-        <Content Include=".editorconfig" />
+        <Content Include=".editorconfig"/>
         <None Include="..\Translations\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <Link>Translations\%(RecursiveDir)%(Filename)%(Extension)</Link>
@@ -40,6 +40,8 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Modules\" />
+        <None Include="..\Translations\en\modules.state.json">
+            <Link>Translations\en\modules.state.json.cs</Link>
+        </None>
     </ItemGroup>
 </Project>

@@ -1,0 +1,33 @@
+{
+    "modules": {
+        "selector": {
+            "config": {
+                "title": "Fate Selector",
+                "cost_per_yalm": {
+                    "label": "Cost Per Yalm",
+                    "tooltip": "Penalty to fate score modifier, based on distance to fate."
+                },
+                "time_to_teleport": {
+                    "label": "Seconds To Teleport",
+                    "tooltip": "How many seconds it takes to teleport and load."
+                },
+                "bonus_fate_modifier": {
+                    "label": "Bonus Fate Modifier",
+                    "tooltip": "Score bonus for fates with a bonus."
+                },
+                "unstarted_fate_modifier": {
+                    "label": "Unstarted Fate Modifier",
+                    "tooltip": "Score bonus for fates that haven't been started."
+                },
+                "time_required_to_consider_fate": {
+                    "label": "Seconds Required To Consider Fate",
+                    "tooltip": "How many seconds should be required in a fates estimated completion time, after an estimated arrival time."
+                },
+                "in_progress_fate_modifier": {
+                    "label": "In Progress Fate Modifier",
+                    "tooltip": "Score bonus for fates that are already in progress but above the required seconds threshold.\nThis bonus is applied multiplicatively to the estimated time remaining after pathing to the fate."
+                }
+            }
+        }
+    }
+}

@@ -1,9 +1,12 @@
 {
   "windows": {
     "main": {
-      "title": "PluginTemplate",
+      "title": "Twist of Fayte",
       "buttons": {
         "toggle_config": "Toggle config window"
+      },
+      "missing_ipc": {
+        "label": "'{plugin}' is required."
       }
     }
   }

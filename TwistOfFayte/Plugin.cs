@@ -7,20 +7,17 @@ namespace TwistOfFayte;
 
 public sealed class Plugin : OcelotPlugin
 {
-    public override string Name
-    {
+    public override string Name {
         get => "TwistOfFayte";
     }
 
     public Config Config { get; }
 
-    public override IOcelotConfig OcelotConfig
-    {
+    public override IOcelotConfig OcelotConfig {
         get => Config;
     }
 
-    public static ChainQueue Chain
-    {
+    public static ChainQueue Chain {
         get => ChainManager.Get("TwistOfFayte.Chain");
     }
 
@@ -34,6 +31,9 @@ public sealed class Plugin : OcelotPlugin
         OcelotInitialize();
 
         ChainManager.Initialize();
+
+        Windows.OpenMainUI();
+        Windows.OpenConfigUI();
     }
 
     private void SetupLanguage(IDalamudPluginInterface plugin)
