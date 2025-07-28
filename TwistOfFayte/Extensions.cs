@@ -83,7 +83,37 @@ public static class StringExtensions
 
 public static class PathExtensions
 {
-    public static List<Vector3> Smooth(this List<Vector3> points, float pointsPerUnit = 1.0f, int minSegments = 4)
+    public static List<Vector3> ContinueFrom(this List<Vector3> points, Vector3 point)
+    {
+        if (points.Count == 0)
+        {
+            return [];
+        }
+
+        var bestIndex = 0;
+        var bestDistance = float.MaxValue;
+
+        for (var i = 0; i < points.Count; i++)
+        {
+            var totalDistance = Vector3.Distance(point, points[i]);
+
+            for (var j = i; j < points.Count - 1; j++)
+            {
+                totalDistance += Vector3.Distance(points[j], points[j + 1]);
+            }
+
+            if (totalDistance < bestDistance)
+            {
+                bestDistance = totalDistance;
+                bestIndex = i;
+            }
+        }
+
+        return points.GetRange(bestIndex, points.Count - bestIndex);
+    }
+
+
+    public static List<Vector3> Smooth(this List<Vector3> points, float pointsPerUnit = 0.25f, int minSegments = 2)
     {
         if (points.Count < 2)
         {
@@ -170,5 +200,32 @@ public static class JobExtensions
 
         // 0 = crafter/gatherer, 1 = tank, 2 = melee
         return data.Value.Role <= 2;
+    }
+}
+
+public static class NodeEx
+{
+    public static Vector3 GetPointFromPlayer(this Vector3 origin, float max, float min = 0f)
+    {
+        return origin.GetPointFrom(Player.Position, max, min);
+    }
+    
+    public static Vector3 GetPointFrom(this Vector3 origin, Vector3 from, float max, float min = 0f)
+    {
+        if (min < 0f || min > max)
+        {
+            throw new ArgumentOutOfRangeException(nameof(min), "min must be between 0 and max");
+        }
+        
+        var direction = Vector3.Normalize(origin - from);
+
+        var angle = (float)(Random.Shared.NextDouble() * MathF.PI / 3 - MathF.PI / 6);
+        var sin = MathF.Sin(angle);
+        var cos = MathF.Cos(angle);
+
+        var rotatedDirection = new Vector3(direction.X * cos - direction.Z * sin, 0, direction.X * sin + direction.Z * cos);
+        var distance = (float)(min + Random.Shared.NextDouble() * (max - min));
+
+        return origin - rotatedDirection * distance;
     }
 }

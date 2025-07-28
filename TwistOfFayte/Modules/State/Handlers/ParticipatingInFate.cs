@@ -107,6 +107,7 @@ public class ParticipatingInFate : StateHandler<State, StateModule>
             {
                 module.VNavmesh.Stop();
                 Path = Path.Walk(destination, module.VNavmesh, path => path.Count <= 0 ? path : path.Smooth());
+                Svc.Targets.Target = TargetHelper.InCombat.Centroid();
             }
         }
 

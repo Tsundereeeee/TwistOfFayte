@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Fates;
+using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using ECommons.Throttlers;
 using Ocelot.Gameplay;
+using Ocelot.Prowler;
 using Ocelot.States;
 
 namespace TwistOfFayte.Modules.State.Handlers;
@@ -15,50 +17,55 @@ public class PathfindingToFate : StateHandler<State, StateModule>
 
     private bool IsPathingToNpc = false;
 
-    private Path? Path = null;
+    private bool IsComplete = false;
 
     public override void Enter(StateModule module)
     {
         Destination = null;
         IsPathingToNpc = false;
-        Path = null;
+        IsComplete = false;
+        
+        Destination = FateHelper.SelectedFate?.GetDestination();
     }
 
     public override State? Handle(StateModule module)
     {
-        if (FateHelper.SelectedFate == null)
+        if (FateHelper.SelectedFate == null || Destination == null)
         {
             module.Debug("Fate ended, returning to idle");
             return State.Idle;
         }
 
-        if (Destination == null)
+        if (IsComplete || FateHelper.CurrentFate?.IsSelected() == true)
         {
-            Destination = FateHelper.SelectedFate.GetDestination();
-            module.Debug($"Selected point in fate radius '{Destination:f2}'");
-            // var floor = module.VNavmesh.FindPointOnFloor(Destination!.Value, false, 10);
-            // if (floor.HasValue && floor != Vector3.NaN)
-            // {
-            //     module.Debug($"Setting destination to point on floor. From '{Destination:f2}' to '{floor:f2}'");
-            //     Destination = floor.Value;
-            // }
+            return FateHelper.SelectedFate.State == FateState.Preparation ? State.StartingFate : State.ParticipatingInFate;
         }
 
         // Path to starting NPC if needed
-        if (Destination.HasValue && FateHelper.SelectedFate.State == FateState.Preparation && !IsPathingToNpc && TargetHelper.Friendlies.Any())
+        if (FateHelper.SelectedFate.IsInPreparation() && !IsPathingToNpc && TargetHelper.Friendlies.Any())
         {
-            var position = TargetHelper.Friendlies.First().Position;
-            if (position != Vector3.NaN)
-            {
-                Destination = position;
-                IsPathingToNpc = true;
-                module.VNavmesh.Stop();
+            var npc = TargetHelper.Friendlies.First();
+            IsPathingToNpc = true;
 
-                module.Debug($"Re-pathing to starting npc {Destination:f2}");
+            module.Debug($"Re-pathing to starting npc {Destination:f2}");
+            
+            Prowler.Prowl(new (npc) {
+                ShouldFly = true,
+                PreProcessor = prowl => {
+                    if (prowl.GameObject == null)
+                    {
+                        Destination =  prowl.OriginalDestination;
+                        return (prowl.OriginalStart, prowl.OriginalDestination);    
+                    }
 
-                Path?.Dispose();
-                Path = null;
-            }
+                    Destination = prowl.OriginalDestination.GetPointFromPlayer(prowl.GameObject.HitboxRadius, prowl.GameObject.HitboxRadius + 2f);
+                    
+                    return (prowl.OriginalStart, Destination.Value);
+                },
+                PostProcessor = prowl => prowl.OriginalNodes.ContinueFrom(Player.Position).Smooth(),
+                Watcher = prowl => Player.DistanceTo(prowl.Destination) <= 5f,
+                OnComplete = (_, _) => IsComplete = true,
+            });
         }
 
         var distance = Player.DistanceTo(Destination!.Value);
@@ -69,18 +76,14 @@ public class PathfindingToFate : StateHandler<State, StateModule>
             return FateHelper.SelectedFate.State == FateState.Preparation ? State.StartingFate : State.ParticipatingInFate;
         }
 
-        if (Destination.HasValue)
+        if (Destination.HasValue && !Prowler.IsRunning)
         {
-            if (Path?.IsDone == true)
-            {
-                Path = null;
-            }
-
-            if (Path == null)
-            {
-                module.Debug($"Generating new path to {Destination.Value:f2}");
-                Path = Path.Fly(Destination.Value, module.VNavmesh, path => path.Smooth());
-            }
+            Prowler.Prowl(new Prowl(Destination.Value) {
+                ShouldFly = true,
+                PostProcessor = prowl => prowl.OriginalNodes.Smooth(),
+                Watcher = prowl => Player.DistanceTo(prowl.Destination) <= 5f,
+                OnComplete = (_, _) => IsComplete = true,
+            });
         }
 
         if (!Player.Mounted && !Player.Mounting && EzThrottler.Throttle("Mount", 2500))

@@ -1,14 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Fates;
 using Dalamud.Interface;
-using ECommons.GameHelpers;
+using ECommons.DalamudServices;
+using ECommons.GameFunctions;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
+using Lumina.Excel.Sheets;
 using Ocelot;
+using Ocelot.Prowler;
 using Ocelot.Windows;
 using TwistOfFayte.Gameplay;
 using TwistOfFayte.Modules.Currency;
-using TwistOfFayte.Modules.Selector;
 using TwistOfFayte.Modules.State;
 using TwistOfFayte.Modules.Tracker;
 
@@ -40,7 +44,7 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
         });
     }
 
-    protected override void Render(RenderContext context)
+    protected override unsafe void Render(RenderContext context)
     {
         var module = plugin.Modules.GetModule<StateModule>();
         if (!module.HasRequiredIPCs)
@@ -64,8 +68,68 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
         OcelotUI.VSpace();
         ImGui.Separator();
         OcelotUI.VSpace();
-        
+
         RenderGemstones(context);
+        OcelotUI.VSpace();
+        ImGui.Separator();
+        OcelotUI.VSpace();
+
+        foreach (var npc in TargetHelper.Friendlies)
+        {
+            if (Svc.Targets.Target?.EntityId == npc.EntityId)
+            {
+                ImGui.TextUnformatted("*");
+                ImGui.SameLine();
+            }
+            
+            OcelotUI.LabelledValue("Name", npc.Name.ToString());
+            OcelotUI.Indent(() => { 
+                OcelotUI.LabelledValue("Name Id", npc.NameId);
+                OcelotUI.LabelledValue("Position", npc.Position.ToString("f2"));
+                OcelotUI.LabelledValue("Has Behaviour", (Svc.Data.GetExcelSheet<BNpcBase>().GetRow(npc.NameId).Behavior.RowId != 0));
+
+                var obj = npc.GameObject();
+
+                if (obj->IsCharacter())
+                {
+                    var character = (Character*)obj;
+                    // OcelotUI.LabelledValue("Icon", character->Level);
+                    
+                    OcelotUI.LabelledValue("ModelScale", character->ModelScale);
+                    OcelotUI.LabelledValue("Health", character->Health);
+                    OcelotUI.LabelledValue("MaxHealth", character->MaxHealth);
+                    OcelotUI.LabelledValue("Mana", character->Mana);
+                    OcelotUI.LabelledValue("MaxMana", character->MaxMana);
+                    OcelotUI.LabelledValue("GatheringPoints", character->GatheringPoints);
+                    OcelotUI.LabelledValue("MaxGatheringPoints", character->MaxGatheringPoints);
+                    OcelotUI.LabelledValue("CraftingPoints", character->CraftingPoints);
+                    OcelotUI.LabelledValue("MaxCraftingPoints", character->MaxCraftingPoints);
+                    OcelotUI.LabelledValue("TransformationId", character->TransformationId);
+                    OcelotUI.LabelledValue("TitleId", character->TitleId);
+                    OcelotUI.LabelledValue("StatusLoopVfxId", character->StatusLoopVfxId);
+                    OcelotUI.LabelledValue("ClassJob", character->ClassJob);
+                    OcelotUI.LabelledValue("Level", character->Level);
+                    OcelotUI.LabelledValue("Icon", character->Icon);
+                    OcelotUI.LabelledValue("SEPack", character->SEPack);
+                    OcelotUI.LabelledValue("ShieldValue", character->ShieldValue);
+                    OcelotUI.LabelledValue("Map", character->Map);
+                    OcelotUI.LabelledValue("OnlineStatus", character->OnlineStatus);
+                    OcelotUI.LabelledValue("Battalion", character->Battalion);
+                    
+                    OcelotUI.LabelledValue("Flags", character->Flags);
+                    OcelotUI.LabelledValue("CombatTagType", character->CombatTagType);
+                    OcelotUI.LabelledValue("CombatTaggerId", character->CombatTaggerId);
+    
+                }
+                else
+                {
+                    OcelotUI.Title("Not a cahracter...");
+                }
+
+            });
+        }
+        
+        
     }
 
     private void RenderState(RenderContext _)
@@ -77,7 +141,7 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
                 ImGui.SetTooltip(FateHelper.SelectedFate.State.ToString());
             }
         }
-        
+
         var state = plugin.Modules.GetModule<StateModule>();
         var key = state.StateMachine.State.GetKey();
         OcelotUI.LabelledValue("State", state.T($"state.{key}.label"));
@@ -87,9 +151,14 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
             ImGui.SetTooltip(state.T($"state.{key}.tooltip"));
         }
     }
-    
+
     private void RenderActiveFates(RenderContext _)
     {
+        if (plugin.Modules.GetModule<TrackerModule>().Fates.Count <= 0)
+        {
+            ImGui.Text("No Fates");
+        }
+
         foreach (var fate in plugin.Modules.GetModule<TrackerModule>().Fates.Values)
         {
             var progress = fate.Progress / 100f;
@@ -140,15 +209,12 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
             OcelotUI.VSpace();
         }
     }
-    
+
     private void RenderGemstones(RenderContext context)
     {
-        
         OcelotUI.LabelledValue("Bicolor Gemstones", $"{Items.BicolorGemstones.Count()}/1500");
 
         var delta = plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.GetGainPerHour();
         OcelotUI.LabelledValue("Bicolor Gemstones per hour", delta);
     }
-    
-    
 }

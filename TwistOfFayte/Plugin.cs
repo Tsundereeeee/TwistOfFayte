@@ -33,7 +33,7 @@ public sealed class Plugin : OcelotPlugin
         ChainManager.Initialize();
 
         Windows.OpenMainUI();
-        Windows.OpenConfigUI();
+        // Windows.OpenConfigUI();
     }
 
     private void SetupLanguage(IDalamudPluginInterface plugin)

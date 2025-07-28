@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Fates;
@@ -28,6 +29,8 @@ public class Fate : IEquatable<Fate>
 
     public readonly FateProgress ProgressTracker = new();
 
+    public readonly List<FateContext.FateObjective> Objectives = [];
+
     public float Score { get; private set; } = float.MinValue;
 
     private unsafe Fate(FateContext* context)
@@ -45,22 +48,14 @@ public class Fate : IEquatable<Fate>
         {
             throw new ArgumentException("Fate position was invalid");
         }
+
+        // foreach (var objective in context->Objectives)
+        // {
+        //     Objectives.Add(objective);   
+        // }
     }
 
-    public Fate(IFate fate)
-    {
-        Id = fate.FateId;
-        Position = fate.Position;
-        Radius = fate.Radius;
-        Name = fate.Name.ToString();
-        IsBonus = fate.HasBonus;
-        MaxLevel = fate.MaxLevel;
-
-        if (Position == Vector3.Zero || Position == Vector3.NaN)
-        {
-            throw new ArgumentException("Fate position was invalid");
-        }
-    }
+    public unsafe Fate(IFate fate) : this((FateContext*) fate.Address) { }
 
     public static unsafe Fate Current()
     {
@@ -157,7 +152,7 @@ public class Fate : IEquatable<Fate>
                 return;
             }
 
-            score += (timeLeft - timeToReach) * config.InProgressFateModifier;
+            // score += (timeLeft - timeToReach) * config.InProgressFateModifier;
         }
 
         Score = score;
@@ -166,22 +161,22 @@ public class Fate : IEquatable<Fate>
 
     public Vector3 GetDestination()
     {
-        var toFate = Position - Player.Position;
-        var direction = Vector3.Normalize(toFate);
-
-        var angle = (float)(Random.Shared.NextDouble() * MathF.PI / 3 - MathF.PI / 6);
-        var sin = MathF.Sin(angle);
-        var cos = MathF.Cos(angle);
-
-        var rotatedDirection = new Vector3(direction.X * cos - direction.Z * sin, 0, direction.X * sin + direction.Z * cos);
-        var distance = (float)(Radius * (0.3 + Random.Shared.NextDouble() * 0.4));
-
-        return Position - rotatedDirection * distance;
+        return Position.GetPointFromPlayer(Radius);
     }
 
     public bool NeedSync()
     {
         return MaxLevel < Player.Level && !Player.IsLevelSynced;
+    }
+
+    public bool IsInPreparation()
+    {
+        return State == FateState.Preparation;
+    }
+
+    public bool IsSelected()
+    {
+        return this == FateHelper.SelectedFate;
     }
 
     public override bool Equals(object? obj)

@@ -61,7 +61,7 @@ public class StartingFate : StateHandler<State, StateModule>
                                         .Debug("Player is not mounted, interacting with npc")
                                         .Then(_ => TargetSystem.Instance()->InteractWithObject(Svc.Targets.Target.Struct(), false) != 0)
                                         .Debug("Waiting for Talk Addon")
-                                        .WaitForAddonReady("Talk")
+                                        .WaitForAddonReady("Talk", 200)
                                         .Debug("Waiting for talking to be done")
                                         .Then(_ => {
                                             if (!EzThrottler.Throttle("StartingFate.InteractWithNpc.Talk", 100))

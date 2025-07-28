@@ -93,7 +93,6 @@ public class Path : IDisposable
             throw new TaskCanceledException();
         }
 
-
         vnavmesh.Stop();
 
         if (!vnavmesh.IsRunning())

@@ -7,7 +7,7 @@ public class UiConfig : ModuleConfig
 {
     [Checkbox]
     public bool ShowTimeEstimate { get; set; } = true;
-    
+
     [Checkbox]
     public bool ShowObjectiveEstimate { get; set; } = true;
 

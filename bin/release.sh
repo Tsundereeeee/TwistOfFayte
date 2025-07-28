@@ -17,17 +17,17 @@ echo "Tag: $TAG"
 echo "Testing release: $IS_TESTING"
 
 # Create tag and release
-git tag "$TAG"
-git push origin master "$TAG"
-dotnet build -c Release
+#git tag "$TAG"
+#git push origin master "$TAG"
+#dotnet build -c Release
+#
+#if [ "$IS_TESTING" = true ]; then
+#    gh release create "$TAG" --title "$TAG" --generate-notes --prerelease
+#else
+#    gh release create "$TAG" --title "$TAG" --generate-notes
+#fi
 
-if [ "$IS_TESTING" = true ]; then
-    gh release create "$TAG" --title "$TAG" --generate-notes --prerelease
-else
-    gh release create "$TAG" --title "$TAG" --generate-notes
-fi
-
-gh release upload "$TAG" TwistOfFayte/bin/Release/TwistOfFayte/latest.zip --clobber
+gh release upload "$TAG" TwistOfFayte/bin/x64/Release/TwistOfFayte/latest.zip --clobber
 
 # Update plugin manifest
 # gh repo clone plugins
