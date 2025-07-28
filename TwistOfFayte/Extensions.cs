@@ -209,14 +209,14 @@ public static class NodeEx
     {
         return origin.GetPointFrom(Player.Position, max, min);
     }
-    
+
     public static Vector3 GetPointFrom(this Vector3 origin, Vector3 from, float max, float min = 0f)
     {
         if (min < 0f || min > max)
         {
             throw new ArgumentOutOfRangeException(nameof(min), "min must be between 0 and max");
         }
-        
+
         var direction = Vector3.Normalize(origin - from);
 
         var angle = (float)(Random.Shared.NextDouble() * MathF.PI / 3 - MathF.PI / 6);
