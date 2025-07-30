@@ -9,7 +9,7 @@ using TwistOfFayte.Modules;
 namespace TwistOfFayte.Windows;
 
 [OcelotConfigWindow]
-public class ConfigWindow(Plugin plugin, Config config) : OcelotConfigWindow(plugin, config)
+public class ConfigWindow(Plugin _plugin, Config _config) : OcelotConfigWindow(_plugin, _config)
 {
     private IModule? selectedConfigModule;
 

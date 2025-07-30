@@ -46,8 +46,8 @@ public class SelectorModule(Plugin plugin, Config config) : Module(plugin, confi
             return;
         }
 
-        var fate = TrackerModule.Fates.Values.FirstOrDefault();
-        if (fate != null)
+        var fate = TrackerModule.Fates.Values.FirstOrDefault(f => !f.IsBlacklisted(plugin));
+        if (fate != null && FateHelper.SelectedFate != fate)
         {
             Svc.Log.Debug($"Selecting new fate '{fate.Name}', Score: {fate.Score}");
 

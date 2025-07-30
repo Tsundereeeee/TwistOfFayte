@@ -3,18 +3,25 @@
 public enum State
 {
     Idle,
+
     InCombat,
+
     PathfindingToFate,
+
     StartingFate,
+
     ParticipatingInFate,
 
     // Traversal
     ChangingInstance,
+
     ChangingZone,
 
-    // 
+    //
     RepairGear,
+
     ExtractMateria,
+
     SpendGemstones,
 }
 

@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Interface.Colors;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using ECommons.Throttlers;
 using Ocelot.Modules;
+using Ocelot.Windows;
 
 namespace TwistOfFayte.Modules.Target;
 
@@ -58,36 +60,36 @@ public class TargetModule(Plugin plugin, Config config) : Module(plugin, config)
             TargetHelper.Update(FateHelper.SelectedFate);
         }
 
-        if (FateHelper.CurrentFate == null || Player.Mounted || !ShouldTarget)
-        {
-            return;
-        }
-
-        if (Target?.IsTargetingPlayer() == true && NotInCombat.Any())
-        {
-            Target = null;
-            Plugin.Chain.Abort();
-        }
-
-        Target ??= TheForlorns.FirstOrDefault();
-        Target ??= ForlornMaidens.FirstOrDefault();
-        if (Target != null)
-        {
-            return;
-        }
-
-        if (!NotInCombat.Any() && InCombat.Any())
-        {
-            Target = null;
-        }
-
-        if (!TargetHelper.NotInCombat.Any())
-        {
-            Target = InCombat.Centroid();
-            return;
-        }
-
-        Target ??= NotInCombat.First();
+        // if (FateHelper.CurrentFate == null || Player.Mounted || !ShouldTarget)
+        // {
+        //     return;
+        // }
+        //
+        // if (Target?.IsTargetingPlayer() == true && NotInCombat.Any())
+        // {
+        //     Target = null;
+        //     Plugin.Chain.Abort();
+        // }
+        //
+        // Target ??= TheForlorns.FirstOrDefault();
+        // Target ??= ForlornMaidens.FirstOrDefault();
+        // if (Target != null)
+        // {
+        //     return;
+        // }
+        //
+        // if (!NotInCombat.Any() && InCombat.Any())
+        // {
+        //     Target = null;
+        // }
+        //
+        // if (!TargetHelper.NotInCombat.Any())
+        // {
+        //     Target = InCombat.Centroid();
+        //     return;
+        // }
+        //
+        // Target ??= NotInCombat.First();
     }
 
 
@@ -99,5 +101,10 @@ public class TargetModule(Plugin plugin, Config config) : Module(plugin, config)
     public override void Dispose()
     {
         FateHelper.OnLeaveFate -= LeaveFate;
+    }
+
+    public override void Render(RenderContext context)
+    {
+
     }
 }

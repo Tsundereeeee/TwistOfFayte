@@ -1,0 +1,29 @@
+{
+    "modules": {
+        "debug": {
+            "config": {
+                "title": "Debug",
+                "render_distance_to_engaged_enemies": {
+                    "label": "Render range indicator for engaged enemies",
+                    "tooltip": "Render a range indicator from the player to the furthest engaged enemies hitbox"
+                },
+                "render_distance_to_not_engaged_enemies": {
+                    "label":  "Render range indicator for non-engaged enemies",
+                    "tooltip": "Render a range indicator from the player to the furthest non-engaged enemies hitbox"
+                },
+                "render_aoe_radius_around_player":  {
+                    "label":  "Render aoe indicator around player",
+                    "tooltip":  "Render a 5 yalm range indicator around the player"
+                },
+                "render_line_to_engaged_enemies_out_of_aoe_radius": {
+                    "label":  "Render line to engaged enemies that are out of range",
+                    "tooltip":  "Render a line to engaged enemies who's hitboxes are further than 5 yalms"
+                },
+                "render_likne_to_non_engaged_enemies":  {
+                    "label":  "render line to non-engaged enemies",
+                    "tooltip":  "Render a line to non-engaged enemies"
+                }
+            }
+        }
+    }
+}

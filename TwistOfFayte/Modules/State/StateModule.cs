@@ -22,6 +22,6 @@ public class StateModule : Module
 
     public override void Update(UpdateContext context)
     {
-        StateMachine.Update(this);
+        StateMachine.Update();
     }
 }

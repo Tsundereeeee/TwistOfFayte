@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
+using System.Text;
 using Dalamud.Game.ClientState.Fates;
 using Dalamud.Interface;
-using ECommons.DalamudServices;
-using ECommons.GameFunctions;
+using ECommons.ExcelServices;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
-using Lumina.Excel.Sheets;
 using Ocelot;
-using Ocelot.Prowler;
 using Ocelot.Windows;
+using SharpDX.DirectWrite;
 using TwistOfFayte.Gameplay;
 using TwistOfFayte.Modules.Currency;
 using TwistOfFayte.Modules.State;
+using TwistOfFayte.Modules.State.Handlers;
+using TwistOfFayte.Modules.State.Handlers.FateAi;
 using TwistOfFayte.Modules.Tracker;
 
 namespace TwistOfFayte.Windows;
@@ -34,7 +35,7 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
             var module = plugin.Modules.GetModule<StateModule>();
             module.IsRunning ^= true;
             module.VNavmesh.Stop();
-            module.StateMachine.Reset(module);
+            module.StateMachine.Reset();
 
             button.Icon = module.IsRunning ? FontAwesomeIcon.Pause : FontAwesomeIcon.Play;
         }) {
@@ -74,62 +75,28 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
         ImGui.Separator();
         OcelotUI.VSpace();
 
-        foreach (var npc in TargetHelper.Friendlies)
+        foreach (var mob in TargetHelper.NotInCombat)
         {
-            if (Svc.Targets.Target?.EntityId == npc.EntityId)
-            {
-                ImGui.TextUnformatted("*");
-                ImGui.SameLine();
-            }
-            
-            OcelotUI.LabelledValue("Name", npc.Name.ToString());
-            OcelotUI.Indent(() => { 
-                OcelotUI.LabelledValue("Name Id", npc.NameId);
-                OcelotUI.LabelledValue("Position", npc.Position.ToString("f2"));
-                OcelotUI.LabelledValue("Has Behaviour", (Svc.Data.GetExcelSheet<BNpcBase>().GetRow(npc.NameId).Behavior.RowId != 0));
-
-                var obj = npc.GameObject();
-
-                if (obj->IsCharacter())
+            OcelotUI.LabelledValue("Name", mob.Name);
+            OcelotUI.Indent(() => {
+                OcelotUI.LabelledValue("Position", mob.Position.ToString("f2"));
+                OcelotUI.LabelledValue("Target", mob.TargetObject != null);
+                if (mob.TargetObject == null)
                 {
-                    var character = (Character*)obj;
-                    // OcelotUI.LabelledValue("Icon", character->Level);
-                    
-                    OcelotUI.LabelledValue("ModelScale", character->ModelScale);
-                    OcelotUI.LabelledValue("Health", character->Health);
-                    OcelotUI.LabelledValue("MaxHealth", character->MaxHealth);
-                    OcelotUI.LabelledValue("Mana", character->Mana);
-                    OcelotUI.LabelledValue("MaxMana", character->MaxMana);
-                    OcelotUI.LabelledValue("GatheringPoints", character->GatheringPoints);
-                    OcelotUI.LabelledValue("MaxGatheringPoints", character->MaxGatheringPoints);
-                    OcelotUI.LabelledValue("CraftingPoints", character->CraftingPoints);
-                    OcelotUI.LabelledValue("MaxCraftingPoints", character->MaxCraftingPoints);
-                    OcelotUI.LabelledValue("TransformationId", character->TransformationId);
-                    OcelotUI.LabelledValue("TitleId", character->TitleId);
-                    OcelotUI.LabelledValue("StatusLoopVfxId", character->StatusLoopVfxId);
-                    OcelotUI.LabelledValue("ClassJob", character->ClassJob);
-                    OcelotUI.LabelledValue("Level", character->Level);
-                    OcelotUI.LabelledValue("Icon", character->Icon);
-                    OcelotUI.LabelledValue("SEPack", character->SEPack);
-                    OcelotUI.LabelledValue("ShieldValue", character->ShieldValue);
-                    OcelotUI.LabelledValue("Map", character->Map);
-                    OcelotUI.LabelledValue("OnlineStatus", character->OnlineStatus);
-                    OcelotUI.LabelledValue("Battalion", character->Battalion);
-                    
-                    OcelotUI.LabelledValue("Flags", character->Flags);
-                    OcelotUI.LabelledValue("CombatTagType", character->CombatTagType);
-                    OcelotUI.LabelledValue("CombatTaggerId", character->CombatTaggerId);
-    
-                }
-                else
-                {
-                    OcelotUI.Title("Not a cahracter...");
+                    return;
                 }
 
+                OcelotUI.Indent(() => {
+                    var target = (BattleChara*)mob.TargetObject.Address;
+
+                    OcelotUI.LabelledValue("Is Character", target->IsCharacter());
+
+                    var job = (Job)target->ClassJob;
+                    OcelotUI.LabelledValue("Is Tank", job.IsTank());
+                });
             });
+
         }
-        
-        
     }
 
     private void RenderState(RenderContext _)
@@ -150,6 +117,18 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
         {
             ImGui.SetTooltip(state.T($"state.{key}.tooltip"));
         }
+
+        if (state.StateMachine.TryGetCurrentHandler<ParticipatingInFate>(out var handler))
+        {
+            OcelotUI.LabelledValue("Sub-state", handler.StateMachine.State.ToString());
+
+            if (handler.StateMachine.TryGetCurrentHandler<GatherMobs>(out var subhandler)) { }
+        }
+
+        var isPathfinding = state.VNavmesh.IsPathfinding();
+        var isRunning = state.VNavmesh.IsRunning();
+
+        OcelotUI.LabelledValue("Vnavmesh state", isPathfinding ? "Pathfinding" : isRunning ? "Running" : "Idle");
     }
 
     private void RenderActiveFates(RenderContext _)
@@ -183,9 +162,14 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
             }
 
             var color = OcelotColor.Text;
-            if (fate == FateHelper.SelectedFate && _config.UiConfig.HighlightSelectedFate)
+            if (fate.IsSelected() && _config.UiConfig.HighlightSelectedFate)
             {
                 color = OcelotColor.Blue;
+            }
+
+            if (fate.IsBlacklisted(_plugin))
+            {
+                color = OcelotColor.Disabled;
             }
 
             left.Add(fate.Name, color);
@@ -197,7 +181,20 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
             var right = new UIString().Add(fateProgressText);
             if (OcelotUI.LeftRightText(left, right) == UIState.LeftHovered)
             {
-                ImGui.SetTooltip($"{fate.State} (Score: {fate.Score:f2})");
+                var sb = new StringBuilder();
+                sb.AppendLine($"{fate.State} (Score: {fate.Score:f2})");
+                foreach (var source in fate.Score.Sources)
+                {
+                    sb.AppendLine($" - {source.Key}: {source.Value:f2}");
+                }
+
+
+                ImGui.SetTooltip(sb.ToString());
+                if (ImGui.IsMouseClicked(ImGuiMouseButton.Middle))
+                {
+                    _plugin.Config.FateBlacklist.Toggle(fate.Id);
+                    _plugin.Config.Save();
+                }
             }
 
 

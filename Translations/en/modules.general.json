@@ -1,0 +1,29 @@
+{
+    "modules": {
+        "general": {
+            "config": {
+                "title": "General",
+                "mount": {
+                    "label": "Unused",
+                    "tooltip": "Unused"
+                },
+                "mount_roulette": {
+                    "label": "Unused",
+                    "tooltip": "Unused"
+                },
+                "should_extract_materia": {
+                    "label": "Should Extract Materia",
+                    "tooltip": "Has had minimal testing, but will extract materia during the idle state if possible."
+                },
+                "should_repair_gear": {
+                    "label": "Unused",
+                    "tooltip": "Unused"
+                },
+                "max_mobs_to_fight": {
+                    "label": "Max Mobs to Fight",
+                    "tooltip": "Max number of mobs to fight at one time, the bot will try to pull mobs until this number is reached. 0 = infinite."
+                }
+            }
+        }
+    }
+}

@@ -32,8 +32,10 @@ public sealed class Plugin : OcelotPlugin
 
         ChainManager.Initialize();
 
+#if DEBUG
         Windows.OpenMainUI();
         // Windows.OpenConfigUI();
+#endif
     }
 
     private void SetupLanguage(IDalamudPluginInterface plugin)
@@ -42,5 +44,10 @@ public sealed class Plugin : OcelotPlugin
         I18N.LoadAllFromDirectory("en", "Translations/en");
 
         I18N.SetLanguage("en");
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
     }
 }

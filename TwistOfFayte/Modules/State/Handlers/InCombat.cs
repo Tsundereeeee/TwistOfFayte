@@ -8,10 +8,10 @@ using Ocelot.States;
 
 namespace TwistOfFayte.Modules.State.Handlers;
 
-[StateAttribute<State>(State.InCombat)]
-public class InCombat : StateHandler<State, StateModule>
+[State<State>(State.InCombat)]
+public class InCombat(StateModule module, StateMachine<State, StateModule> stateMachine) : StateHandler<State, StateModule>(module, stateMachine)
 {
-    public override State? Handle(StateModule module)
+    public override State? Handle()
     {
         if (!Svc.Condition[ConditionFlag.InCombat])
         {

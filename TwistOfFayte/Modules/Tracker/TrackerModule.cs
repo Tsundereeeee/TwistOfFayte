@@ -13,7 +13,7 @@ public class TrackerModule(Plugin plugin, Config config) : Module(plugin, config
     private readonly Dictionary<uint, Fate> _fates = [];
 
     public IReadOnlyDictionary<uint, Fate> Fates {
-        get => _fates.OrderByDescending(f => f.Value.Score).ToDictionary().AsReadOnly();
+        get => _fates.OrderByDescending(f => f.Value.Score.Value).ToDictionary().AsReadOnly();
     }
 
     public override void Update(UpdateContext context)

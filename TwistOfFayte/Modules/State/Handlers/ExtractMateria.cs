@@ -5,10 +5,10 @@ using TwistOfFayte.Modules.General;
 
 namespace TwistOfFayte.Modules.State.Handlers;
 
-[StateAttribute<State>(State.ExtractMateria)]
-public class ExtractMateria : StateHandler<State, StateModule>
+[State<State>(State.ExtractMateria)]
+public class ExtractMateria(StateModule module, StateMachine<State, StateModule> stateMachine) : StateHandler<State, StateModule>(module, stateMachine)
 {
-    public override State? Handle(StateModule module)
+    public override State? Handle()
     {
         if (Plugin.Chain.IsRunning)
         {
@@ -22,7 +22,6 @@ public class ExtractMateria : StateHandler<State, StateModule>
 
         if (MateriaHelper.CanExtract() && !Plugin.Chain.IsRunning)
         {
-            // Svc.Log.Info("Firing off Extractor!");
             MateriaHelper.ExtractEquipped();
             return null;
         }

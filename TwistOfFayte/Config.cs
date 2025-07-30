@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using ECommons.DalamudServices;
 using Ocelot;
+using TwistOfFayte.Modules.Debug;
 using TwistOfFayte.Modules.General;
 using TwistOfFayte.Modules.Selector;
 using TwistOfFayte.Modules.Ui;
@@ -17,6 +19,10 @@ public class Config : IOcelotConfig
     public GeneralConfig GeneralConfig { get; set; } = new();
 
     public UiConfig UiConfig { get; set; } = new();
+
+    public DebugConfig DebugConfig { get; set; } = new();
+
+    public List<uint> FateBlacklist { get; set; } = [];
 
     public void Save()
     {

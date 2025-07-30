@@ -75,7 +75,7 @@ public static class StringExtensions
     {
         return string.Concat(
             str.Select((ch, i) =>
-                           i > 0 && char.IsUpper(ch) ? "_" + char.ToLower(ch) : char.ToLower(ch).ToString()
+                i > 0 && char.IsUpper(ch) ? "_" + char.ToLower(ch) : char.ToLower(ch).ToString()
             )
         );
     }
@@ -120,7 +120,7 @@ public static class PathExtensions
             return points;
         }
 
-
+        points = points.Distinct().ToList();
         var smoothed = new List<Vector3> { points[0] };
 
         for (var i = 0; i < points.Count - 1; i++)
@@ -156,7 +156,9 @@ public static class PathExtensions
 
         smoothed.Add(points[^1]);
 
-        return smoothed;
+        return smoothed
+            .Where(v => !float.IsNaN(v.X) && !float.IsNaN(v.Y) && !float.IsNaN(v.Z))
+            .ToList();
     }
 
     private static float GetT(float t, Vector3 p0, Vector3 p1)
@@ -190,9 +192,14 @@ public static class PathExtensions
 
 public static class JobExtensions
 {
+    private static ClassJob? GetData(this Job job)
+    {
+        return Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault((uint)job);
+    }
+
     public static bool IsMelee(this Job job)
     {
-        var data = Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault((uint)job);
+        var data = job.GetData();
         if (data == null)
         {
             return true;
@@ -200,6 +207,22 @@ public static class JobExtensions
 
         // 0 = crafter/gatherer, 1 = tank, 2 = melee
         return data.Value.Role <= 2;
+    }
+
+    public static float GetRange(this Job job)
+    {
+        return job.IsMelee() ? 3.5f : 25f;
+    }
+
+    public static bool IsTank(this Job job)
+    {
+        var data = job.GetData();
+        if (data == null)
+        {
+            return false;
+        }
+
+        return data.Value.Role == 1;
     }
 }
 
@@ -227,5 +250,18 @@ public static class NodeEx
         var distance = (float)(min + Random.Shared.NextDouble() * (max - min));
 
         return origin - rotatedDirection * distance;
+    }
+}
+
+public static class ListEx
+{
+    public static void Toggle<T>(this List<T> list, T item)
+    {
+        if (list.Remove(item))
+        {
+            return;
+        }
+
+        list.Add(item);
     }
 }

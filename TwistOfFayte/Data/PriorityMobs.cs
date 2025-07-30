@@ -3,6 +3,7 @@
 public enum PriorityMob
 {
     ForlornMaiden = 6737,
+
     TheForlorn = 6738,
 }
 

@@ -7,6 +7,7 @@ using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using Ocelot.Modules;
+using TwistOfFayte.Modules.State.Handlers;
 using TwistOfFayte.Modules.Tracker;
 using TwistOfFayte.Zone;
 using FateState = Dalamud.Game.ClientState.Fates.FateState;
@@ -31,7 +32,7 @@ public class Fate : IEquatable<Fate>
 
     public readonly List<FateContext.FateObjective> Objectives = [];
 
-    public float Score { get; private set; } = float.MinValue;
+    public readonly Score Score = new();
 
     private unsafe Fate(FateContext* context)
     {
@@ -48,14 +49,9 @@ public class Fate : IEquatable<Fate>
         {
             throw new ArgumentException("Fate position was invalid");
         }
-
-        // foreach (var objective in context->Objectives)
-        // {
-        //     Objectives.Add(objective);   
-        // }
     }
 
-    public unsafe Fate(IFate fate) : this((FateContext*) fate.Address) { }
+    public unsafe Fate(IFate fate) : this((FateContext*)fate.Address) { }
 
     public static unsafe Fate Current()
     {
@@ -100,15 +96,27 @@ public class Fate : IEquatable<Fate>
 
 
     public void UpdateScore(UpdateContext context)
+
     {
         if (!context.IsForModule<TrackerModule>(out var module))
         {
             return;
         }
 
+        if (context.Plugin is Plugin plugin && IsBlacklisted(plugin))
+        {
+            return;
+        }
+
         var config = module.SelectorModule.Config;
 
-        var score = 4096f;
+        Score.Clear();
+
+        if (IsCurrent())
+        {
+            Score.Add("Current", 1024f);
+            return;
+        }
 
         var aetheryteDistance = ZoneHelper.GetAetherytes()
             .Select(a => Vector3.Distance(Position, a.Position))
@@ -118,23 +126,24 @@ public class Fate : IEquatable<Fate>
         var playerDistance = Vector3.Distance(Position, Player.Position);
 
         var distance = Math.Min(aetheryteDistance, playerDistance);
-        score -= distance;
+
+        Score.Add("Distance", (2048 - distance) / 25f);
 
         var teleportRequired = aetheryteDistance < playerDistance;
         if (teleportRequired)
         {
-            score -= config.TimeToTeleport * config.CostPerYalm;
+            Score.Add("Teleport Time", -(config.TimeToTeleport * config.CostPerYalm));
         }
 
         if (IsBonus)
         {
-            score += config.BonusFateModifier;
+            Score.Add("Bonus Modifier", config.BonusFateModifier);
         }
 
         var estimate = ProgressTracker.EstimateTimeToCompletion();
         if (estimate == null)
         {
-            score += config.UnstartedFateModifier;
+            Score.Add("Unstarted Modifier", config.UnstartedFateModifier);
         }
         else
         {
@@ -148,14 +157,12 @@ public class Fate : IEquatable<Fate>
             // Less than about 30 seconds left when we would arrive
             if (timeToReach > timeLeft - config.TimeRequiredToConsiderFate)
             {
-                Score = float.MinValue;
+                Score.Clear();
                 return;
             }
 
-            // score += (timeLeft - timeToReach) * config.InProgressFateModifier;
+            Score.Add("In Progress Modifier", (timeLeft - timeToReach) * config.InProgressFateModifier);
         }
-
-        Score = score;
     }
 
 
@@ -177,6 +184,16 @@ public class Fate : IEquatable<Fate>
     public bool IsSelected()
     {
         return this == FateHelper.SelectedFate;
+    }
+
+    public bool IsCurrent()
+    {
+        return this == FateHelper.CurrentFate;
+    }
+
+    public bool IsBlacklisted(Plugin plugin)
+    {
+        return plugin.Config.FateBlacklist.Contains(Id);
     }
 
     public override bool Equals(object? obj)

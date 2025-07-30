@@ -5,10 +5,10 @@ using TwistOfFayte.Modules.General;
 
 namespace TwistOfFayte.Modules.State.Handlers;
 
-[StateAttribute<State>(State.Idle)]
-public class Idle : StateHandler<State, StateModule>
+[State<State>(State.Idle)]
+public class Idle(StateModule module, StateMachine<State, StateModule> stateMachine) : StateHandler<State, StateModule>(module, stateMachine)
 {
-    public override State? Handle(StateModule module)
+    public override State? Handle()
     {
         if (Svc.Condition[ConditionFlag.InCombat])
         {
