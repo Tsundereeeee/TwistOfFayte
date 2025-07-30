@@ -89,8 +89,8 @@ public class GatherMobs(StateModule module, FateAiStateMachine stateMachine) : H
         }
 
 
-        if (targets.Count == 1 && !Prowler.IsRunning)
-        {
+        // if (targets.Count == 1 && !Prowler.IsRunning)
+        // {
             var target = targets.First();
             Svc.Targets.Target = target;
 
@@ -131,44 +131,44 @@ public class GatherMobs(StateModule module, FateAiStateMachine stateMachine) : H
                 OnComplete = (_, _) => isComplete = true,
                 OnCancel = (_, _) => isComplete = true,
             });
-        }
+        // }
 
-        if (targets.Count > 1 && !Prowler.IsRunning)
-        {
-            var point = Vector3.Zero;
-            foreach (var mob in targets)
-            {
-                point += mob.Position;
-            }
-
-            point /= targets.Count;
-            var destination = point.GetPointFromPlayer(0.25f);
-
-            module.Debug($"[GatherMobs] Prowling to AoE cluster center at {point}, destination: {destination}");
-
-            Prowler.Prowl(new Prowl(destination) {
-                ShouldFly = _ => false,
-                ShouldMount = _ => false,
-                PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
-                Watcher = prowl => {
-                    var playerDist = Player.DistanceTo(prowl.Destination);
-                    if (playerDist <= 0.25f)
-                    {
-                        module.Debug($"[GatherMobs] Reached AoE cluster point (distance {playerDist:0.00}).");
-                        return true;
-                    }
-
-                    var stillInRange = targets.Count(mob =>
-                        Vector3.Distance(mob.Position, prowl.Destination) <= AoeRange + mob.HitboxRadius);
-
-                    module.Debug($"[GatherMobs] Cluster integrity check: {stillInRange}/{targets.Count} still in AoE range.");
-
-                    return stillInRange > 1;
-                },
-                OnComplete = (_, _) => isComplete = true,
-                OnCancel = (_, _) => isComplete = true,
-            });
-        }
+        // if (targets.Count > 1 && !Prowler.IsRunning)
+        // {
+        //     var point = Vector3.Zero;
+        //     foreach (var mob in targets)
+        //     {
+        //         point += mob.Position;
+        //     }
+        //
+        //     point /= targets.Count;
+        //     var destination = point.GetPointFromPlayer(0.25f);
+        //
+        //     module.Debug($"[GatherMobs] Prowling to AoE cluster center at {point}, destination: {destination}");
+        //
+        //     Prowler.Prowl(new Prowl(destination) {
+        //         ShouldFly = _ => false,
+        //         ShouldMount = _ => false,
+        //         PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
+        //         Watcher = prowl => {
+        //             var playerDist = Player.DistanceTo(prowl.Destination);
+        //             if (playerDist <= 0.25f)
+        //             {
+        //                 module.Debug($"[GatherMobs] Reached AoE cluster point (distance {playerDist:0.00}).");
+        //                 return true;
+        //             }
+        //
+        //             var stillInRange = targets.Count(mob =>
+        //                 Vector3.Distance(mob.Position, prowl.Destination) <= AoeRange + mob.HitboxRadius);
+        //
+        //             module.Debug($"[GatherMobs] Cluster integrity check: {stillInRange}/{targets.Count} still in AoE range.");
+        //
+        //             return stillInRange > 1;
+        //         },
+        //         OnComplete = (_, _) => isComplete = true,
+        //         OnCancel = (_, _) => isComplete = true,
+        //     });
+        // }
     }
 
     public override FateAiState? Handle()
