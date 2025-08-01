@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Dalamud.Game.ClientState.Fates;
 using Dalamud.Interface;
 using ECommons.ExcelServices;
-using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
 using Ocelot;
+using Ocelot.Chain;
 using Ocelot.Prowler;
 using Ocelot.Windows;
-using SharpDX.DirectWrite;
-using TwistOfFayte.Gameplay;
 using TwistOfFayte.Modules.Currency;
 using TwistOfFayte.Modules.State;
 using TwistOfFayte.Modules.State.Handlers;
@@ -39,12 +36,13 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
             module.VNavmesh.Stop();
             module.StateMachine.Reset();
             Prowler.Abort();
+            ChainManager.AbortAll();
 
             button.Icon = module.IsRunning ? FontAwesomeIcon.Pause : FontAwesomeIcon.Play;
         }) {
             Icon = FontAwesomeIcon.Play,
             IconOffset = new Vector2(2, 2),
-            ShowTooltip = () => ImGui.SetTooltip(I18N.T("generic.start.label")),
+            ShowTooltip = () => ImGui.SetTooltip(Plugin.Modules.GetModule<StateModule>().IsRunning ? I18N.T("generic.stop") : I18N.T("generic.start")),
         });
     }
 
@@ -98,7 +96,6 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
                     OcelotUI.LabelledValue("Is Tank", job.IsTank());
                 });
             });
-
         }
     }
 

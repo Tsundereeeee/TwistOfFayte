@@ -4,12 +4,12 @@
             "config": {
                 "title": "General",
                 "mount": {
-                    "label": "Unused",
-                    "tooltip": "Unused"
+                    "label": "Mount",
+                    "tooltip": "The mount to use."
                 },
                 "mount_roulette": {
-                    "label": "Unused",
-                    "tooltip": "Unused"
+                    "label": "Use mount roulette",
+                    "tooltip": "Use mount roulette instead of a predefined mount."
                 },
                 "should_extract_materia": {
                     "label": "Should Extract Materia",
@@ -18,6 +18,18 @@
                 "should_repair_gear": {
                     "label": "Unused",
                     "tooltip": "Unused"
+                },
+                "sync_level": {
+                    "label": "Sync level",
+                    "tooltip": "Ensure your level stays synced in the selected fate."
+                },
+                "maintain_stance": {
+                    "label": "Maintain Stance",
+                    "tooltip": "Ensure your stance stays on after syncing levels when on a tank job."
+                },
+                "should_teleport": {
+                    "label": "Should Teleport",
+                    "tooltip": "Should consider aetherytes in the current zone when selecting a fate and pathfinding to them"
                 }
             }
         }

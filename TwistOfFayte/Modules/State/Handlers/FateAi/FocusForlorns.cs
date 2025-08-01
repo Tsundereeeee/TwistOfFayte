@@ -7,7 +7,6 @@ using Ocelot.States;
 
 namespace TwistOfFayte.Modules.State.Handlers.FateAi;
 
-
 [State<FateAiState>(FateAiState.FocusForlorns)]
 public class FocusForlorns(StateModule module) : Handler(module)
 {
@@ -47,11 +46,10 @@ public class FocusForlorns(StateModule module) : Handler(module)
         if (!Prowler.IsRunning && Svc.Targets.Target != null)
         {
             var target = Svc.Targets.Target;
-            Prowler.Prowl(new Prowl(target.Position.GetPointFromPlayer(target.HitboxRadius + Player.Job.GetRange(), target.HitboxRadius))
-            {
+            Prowler.Prowl(new Prowl(target.Position.GetPointFromPlayer(target.HitboxRadius + Player.Job.GetRange(), target.HitboxRadius)) {
                 ShouldFly = _ => false,
                 ShouldMount = _ => false,
-                PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth()
+                PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
             });
         }
 

@@ -1,10 +1,5 @@
-﻿using System.Linq;
-using Dalamud.Plugin;
+﻿using Dalamud.Plugin;
 using ECommons;
-using ECommons.DalamudServices;
-using ECommons.GameHelpers;
-using ECommons.ObjectLifeTracker;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using Ocelot;
 using Ocelot.Chain;
 
@@ -35,8 +30,6 @@ public sealed class Plugin : OcelotPlugin
 
         OcelotInitialize();
 
-        ChainManager.Initialize();
-
 #if DEBUG
         Windows.OpenMainUI();
         // Windows.OpenConfigUI();
@@ -49,10 +42,5 @@ public sealed class Plugin : OcelotPlugin
         I18N.LoadAllFromDirectory("en", "Translations/en");
 
         I18N.SetLanguage("en");
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
     }
 }

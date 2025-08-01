@@ -19,6 +19,10 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Visible>false</Visible>
         </Content>
+        <None Include="..\Ocelot\Translations\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <Link>Translations\%(RecursiveDir)%(Filename)%(Extension)</Link>
+        </None>
         <None Include="..\Translations\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <Link>Translations\%(RecursiveDir)%(Filename)%(Extension)</Link>

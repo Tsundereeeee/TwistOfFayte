@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Fates;
@@ -45,7 +44,7 @@ public class Fate : IEquatable<Fate>
         Name = context->Name.ToString();
         IsBonus = context->IsBonus;
         MaxLevel = context->MaxLevel;
-        Type = Enum.IsDefined(typeof(FateType), context->IconId) ? (FateType) context->IconId : FateType.Unknown;
+        Type = Enum.IsDefined(typeof(FateType), context->IconId) ? (FateType)context->IconId : FateType.Unknown;
 
         if (Position == Vector3.Zero || Position == Vector3.NaN)
         {
@@ -203,9 +202,9 @@ public class Fate : IEquatable<Fate>
     public bool ShouldTeleport()
     {
         var aetheryteDistance = ZoneHelper.GetAetherytes()
-            .Select(a => Vector3.Distance(Position, a.Position))
-            .Order()
-            .FirstOrDefault(float.MaxValue) + (120f);
+                                    .Select(a => Vector3.Distance(Position, a.Position))
+                                    .Order()
+                                    .FirstOrDefault(float.MaxValue) + 120f;
 
         var playerDistance = Vector3.Distance(Position, Player.Position);
 

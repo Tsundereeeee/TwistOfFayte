@@ -1,5 +1,4 @@
 using System.Linq;
-using Dalamud.Interface.Colors;
 using ECommons.GameHelpers;
 using Ocelot.Modules;
 using Ocelot.Windows;
@@ -29,9 +28,8 @@ public class DebugModule(Plugin plugin, Config config) : Module(plugin, config)
             context.DrawCircle(Player.Position, maxDistance, Config.RenderDistanceToEngagedEnemiesColor);
         }
 
-        if (Config.RenderDistanceToNotEngagedEnemies &&TargetHelper.NotInCombat.Any())
+        if (Config.RenderDistanceToNotEngagedEnemies && TargetHelper.NotInCombat.Any())
         {
-
             var maxDistance = TargetHelper.NotInCombat
                 .Select(mob => Player.DistanceTo(mob) - mob.HitboxRadius)
                 .Max();
@@ -44,11 +42,11 @@ public class DebugModule(Plugin plugin, Config config) : Module(plugin, config)
             context.DrawCircle(Player.Position, 5f, Config.RenderAoeRadiusAroundPlayerColor);
         }
 
-        if (Config.RenderLinetoEngagedEnemiesOutOfAoeRadius)
+        if (Config.RenderLineToEngagedEnemiesOutOfAoeRadius)
         {
             foreach (var mob in TargetHelper.InCombat.Where(mob => Player.DistanceTo(mob) > 5f + mob.HitboxRadius))
             {
-                context.DrawLine(mob.Position, Config.RenderLinetoEngagedEnemiesOutOfAoeRadiusColor);
+                context.DrawLine(mob.Position, Config.RenderLineToEngagedEnemiesOutOfAoeRadiusColor);
             }
         }
 

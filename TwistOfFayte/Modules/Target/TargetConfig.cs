@@ -1,5 +1,3 @@
-using System.Numerics;
-using Dalamud.Interface.Colors;
 using Ocelot.Config.Attributes;
 using Ocelot.Modules;
 

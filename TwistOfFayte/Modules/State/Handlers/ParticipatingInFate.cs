@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using Dalamud.Game.ClientState.Objects.Types;
-using ECommons.DalamudServices;
+﻿using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;

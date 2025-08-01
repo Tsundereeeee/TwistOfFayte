@@ -37,7 +37,7 @@ public class GatherMobs(StateModule module) : Handler(module)
         }
 
         var mobsLeft = FateHelper.CurrentFate.ProgressTracker.EstimateEnemiesRemaining();
-        if (mobsLeft > 0 &&  TargetHelper.InCombat.Count() >= mobsLeft)
+        if (mobsLeft > 0 && TargetHelper.InCombat.Count() >= mobsLeft)
         {
             return 0f;
         }
@@ -117,46 +117,46 @@ public class GatherMobs(StateModule module) : Handler(module)
 
         // if (targets.Count == 1 && !Prowler.IsRunning)
         // {
-            var target = targets.First();
-            Svc.Targets.Target = target;
+        var target = targets.First();
+        Svc.Targets.Target = target;
 
-            var radius = target.HitboxRadius;
-            var destination = target.Position.GetPointFromPlayer(radius + 2f, radius);
+        var radius = target.HitboxRadius;
+        var destination = target.Position.GetPointFromPlayer(radius + 2f, radius);
 
-            module.Debug($"[GatherMobs] Prowling to single mob {target.NameId} at {target.Position}, destination: {destination}");
+        module.Debug($"[GatherMobs] Prowling to single mob {target.NameId} at {target.Position}, destination: {destination}");
 
-            Prowler.Prowl(new Prowl(destination) {
-                ShouldFly = _ => false,
-                ShouldMount = _ => false,
-                PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
-                Watcher = prowl => {
-                    var playerDist = Player.DistanceTo(prowl.Destination);
-                    var targetDist = Vector3.Distance(target.Position, prowl.Destination);
-                    var attackRange = Player.Job.GetRange();
+        Prowler.Prowl(new Prowl(destination) {
+            ShouldFly = _ => false,
+            ShouldMount = _ => false,
+            PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
+            Watcher = prowl => {
+                var playerDist = Player.DistanceTo(prowl.Destination);
+                var targetDist = Vector3.Distance(target.Position, prowl.Destination);
+                var attackRange = Player.Job.GetRange();
 
-                    if (playerDist + target.HitboxRadius <= 0f)
-                    {
-                        module.Debug($"[GatherMobs] Reached single-target position (distance {playerDist:0.00}).");
-                        return true;
-                    }
+                if (playerDist + target.HitboxRadius <= 0f)
+                {
+                    module.Debug($"[GatherMobs] Reached single-target position (distance {playerDist:0.00}).");
+                    return true;
+                }
 
-                    if (target.IsTargetingPlayer())
-                    {
-                        module.Debug($"[GatherMobs] Mob {target.NameId} has aggroed on player.");
-                        return true;
-                    }
+                if (target.IsTargetingPlayer())
+                {
+                    module.Debug($"[GatherMobs] Mob {target.NameId} has aggroed on player.");
+                    return true;
+                }
 
-                    if (targetDist > attackRange + target.HitboxRadius)
-                    {
-                        module.Debug($"[GatherMobs] Mob {target.NameId} moved too far (distance {targetDist:0.00}, range {attackRange}).");
-                        return true;
-                    }
+                if (targetDist > attackRange + target.HitboxRadius)
+                {
+                    module.Debug($"[GatherMobs] Mob {target.NameId} moved too far (distance {targetDist:0.00}, range {attackRange}).");
+                    return true;
+                }
 
-                    return false;
-                },
-                OnComplete = (_, _) => isComplete = true,
-                OnCancel = (_, _) => isComplete = true,
-            });
+                return false;
+            },
+            OnComplete = (_, _) => isComplete = true,
+            OnCancel = (_, _) => isComplete = true,
+        });
         // }
 
         // if (targets.Count > 1 && !Prowler.IsRunning)

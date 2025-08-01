@@ -237,7 +237,7 @@ public static class JobExtensions
             3 or 21 => 91,
             32 => 743,
             37 => 1833,
-            _ => 0
+            _ => 0,
         };
 
         return Player.Status.Any(s => s.StatusId == id);

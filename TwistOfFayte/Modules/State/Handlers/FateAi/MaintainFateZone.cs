@@ -35,7 +35,7 @@ public class MaintainFateZone(StateModule module) : Handler(module)
         isComplete = false;
         Prowler.Abort();
 
-        if (FateHelper.CurrentFate == null || Player.DistanceTo( FateHelper.CurrentFate.Position) <= FateHelper.CurrentFate.Radius * 0.9f)
+        if (FateHelper.CurrentFate == null || Player.DistanceTo(FateHelper.CurrentFate.Position) <= FateHelper.CurrentFate.Radius * 0.9f)
         {
             isComplete = true;
             return;

@@ -29,10 +29,10 @@ public class DebugConfig : ModuleConfig
     public Vector4 RenderAoeRadiusAroundPlayerColor { get; set; } = ImGuiColors.DalamudYellow;
 
     [Checkbox]
-    public bool RenderLinetoEngagedEnemiesOutOfAoeRadius { get; set; } = false;
+    public bool RenderLineToEngagedEnemiesOutOfAoeRadius { get; set; } = false;
 
     [Color4]
-    public Vector4 RenderLinetoEngagedEnemiesOutOfAoeRadiusColor { get; set; } = ImGuiColors.DPSRed;
+    public Vector4 RenderLineToEngagedEnemiesOutOfAoeRadiusColor { get; set; } = ImGuiColors.DPSRed;
 
     [Checkbox]
     public bool RenderLineToNonEngagedEnemies { get; set; } = false;

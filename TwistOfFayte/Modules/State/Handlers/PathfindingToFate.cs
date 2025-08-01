@@ -1,16 +1,10 @@
 ﻿using System.Linq;
-using System.Numerics;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Fates;
-using ECommons.DalamudServices;
 using ECommons.GameHelpers;
-using ECommons.Throttlers;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using Ocelot.Chain.ChainEx;
-using Ocelot.Gameplay;
 using Ocelot.Prowler;
 using Ocelot.States;
-using SharpDX.DirectWrite;
 using Chain = Ocelot.Chain.Chain;
 
 namespace TwistOfFayte.Modules.State.Handlers;
@@ -40,6 +34,8 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
             if (Module.PluginConfig.GeneralConfig.ShouldTeleport && FateHelper.SelectedFate.ShouldTeleport())
             {
                 chain = chain
+                    .WaitUntilNotCondition(ConditionFlag.InCombat, 5000)
+                    .WaitGcd()
                     .Then(_ => {
                         if (Module.PluginConfig.GeneralConfig.ShouldTeleport && FateHelper.SelectedFate.ShouldTeleport())
                         {
