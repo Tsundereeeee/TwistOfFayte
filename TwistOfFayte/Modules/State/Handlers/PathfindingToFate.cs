@@ -1,13 +1,17 @@
 ﻿using System.Linq;
 using System.Numerics;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Fates;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using ECommons.Throttlers;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using Ocelot.Chain.ChainEx;
 using Ocelot.Gameplay;
 using Ocelot.Prowler;
 using Ocelot.States;
 using SharpDX.DirectWrite;
+using Chain = Ocelot.Chain.Chain;
 
 namespace TwistOfFayte.Modules.State.Handlers;
 
@@ -29,33 +33,51 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
             return;
         }
 
-        Prowler.Prowl(new Prowl(FateHelper.SelectedFate.GetDestination())
-        {
-            ShouldFly = prowl => prowl.EuclideanDistance >= 30f,
-            ShouldMount = prowl => prowl.PathLength >= 30f,
-            Mount = Module.PluginConfig.GeneralConfig.MountRoulette ? 0 : Module.PluginConfig.GeneralConfig.Mount,
-            PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
-            Watcher = prowl => {
-                if (Player.DistanceTo(prowl.Destination) <= 5f || !FateHelper.SelectedFate.IsActive)
-                {
-                    return true;
-                }
 
-                if (prowl.GameObject != null)
-                {
+        Plugin.Chain.Submit(() => {
+            var chain = Chain.Create($"PathfindingToFate.{FateHelper.SelectedFate.Id}");
+
+            if (Module.PluginConfig.GeneralConfig.ShouldTeleport && FateHelper.SelectedFate.ShouldTeleport())
+            {
+                chain = chain
+                    .Then(_ => {
+                        if (Module.PluginConfig.GeneralConfig.ShouldTeleport && FateHelper.SelectedFate.ShouldTeleport())
+                        {
+                            FateHelper.SelectedFate.Teleport();
+                        }
+                    })
+                    .WaitToCycleCondition(ConditionFlag.BetweenAreas, 7500);
+            }
+
+            chain.Then(_ => Prowler.Prowl(new Prowl(FateHelper.SelectedFate.GetDestination()) {
+                ShouldFly = prowl => prowl.EuclideanDistance >= 30f,
+                ShouldMount = prowl => prowl.PathLength >= 30f,
+                Mount = Module.PluginConfig.GeneralConfig.MountRoulette ? 0 : Module.PluginConfig.GeneralConfig.Mount,
+                PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
+                Watcher = prowl => {
+                    if (Player.DistanceTo(prowl.Destination) <= 5f || !FateHelper.SelectedFate.IsActive)
+                    {
+                        return true;
+                    }
+
+                    if (prowl.GameObject != null)
+                    {
+                        return false;
+                    }
+
+                    if (TargetHelper.Friendlies.Any())
+                    {
+                        module.Debug("Redirecting to npc");
+                        prowl.Redirect(TargetHelper.Friendlies.First());
+                    }
+
+
                     return false;
-                }
+                },
+                OnComplete = (_, _) => isComplete = true,
+            }));
 
-                if (TargetHelper.Friendlies.Any())
-                {
-                    module.Debug("Redirecting to npc");
-                    prowl.Redirect(TargetHelper.Friendlies.First());
-                }
-
-
-                return false;
-            },
-            OnComplete = (_, _) => isComplete = true,
+            return chain;
         });
     }
 

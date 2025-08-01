@@ -126,10 +126,14 @@ public class Fate : IEquatable<Fate>
         var playerDistance = Vector3.Distance(Position, Player.Position);
 
         var distance = Math.Min(aetheryteDistance, playerDistance);
+        if (!module.PluginConfig.GeneralConfig.ShouldTeleport)
+        {
+            distance = playerDistance;
+        }
 
         Score.Add("Distance", (2048 - distance) / 25f);
 
-        var teleportRequired = aetheryteDistance < playerDistance;
+        var teleportRequired = aetheryteDistance < playerDistance && module.PluginConfig.GeneralConfig.ShouldTeleport;
         if (teleportRequired)
         {
             Score.Add("Teleport Time", -(config.TimeToTeleport * config.CostPerYalm));
@@ -194,6 +198,27 @@ public class Fate : IEquatable<Fate>
     public bool IsBlacklisted(Plugin plugin)
     {
         return plugin.Config.FateBlacklist.Contains(Id);
+    }
+
+    public bool ShouldTeleport()
+    {
+        var aetheryteDistance = ZoneHelper.GetAetherytes()
+            .Select(a => Vector3.Distance(Position, a.Position))
+            .Order()
+            .FirstOrDefault(float.MaxValue) + (120f);
+
+        var playerDistance = Vector3.Distance(Position, Player.Position);
+
+        return aetheryteDistance < playerDistance;
+    }
+
+    public void Teleport()
+    {
+        var aetheryte = ZoneHelper.GetAetherytes()
+            .OrderBy(a => Vector3.Distance(Position, a.Position))
+            .First();
+
+        aetheryte.Teleport();
     }
 
     public override bool Equals(object? obj)

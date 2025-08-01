@@ -16,7 +16,7 @@ public class RepositionMobs(StateModule module) : Handler(module)
 
     public override float GetScore()
     {
-        return TargetHelper.InCombatOutOfRange.Count() * 50f;
+        return TargetHelper.InCombatOutOfRange.Count() * 10f;
     }
 
     public override void Enter()
