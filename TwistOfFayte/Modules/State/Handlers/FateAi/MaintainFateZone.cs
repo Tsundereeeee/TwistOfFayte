@@ -1,20 +1,41 @@
 ﻿using ECommons.GameHelpers;
+using Ocelot.Extensions;
 using Ocelot.Prowler;
 using Ocelot.States;
 
 namespace TwistOfFayte.Modules.State.Handlers.FateAi;
 
 [State<FateAiState>(FateAiState.MaintainFateZone)]
-public class MaintainFateZone(StateModule module, FateAiStateMachine stateMachine) : Handler(module, stateMachine)
+public class MaintainFateZone(StateModule module) : Handler(module)
 {
     private bool isComplete = false;
+
+    public override float GetScore()
+    {
+        var fate = FateHelper.CurrentFate;
+        if (fate == null)
+        {
+            return float.MaxValue;
+        }
+
+        var distance = Player.Position.Distance2D(fate.Position);
+        var radius = fate.Radius;
+
+        if (distance > radius)
+        {
+            return 100f;
+        }
+
+        var normalized = distance / radius;
+        return normalized >= 0.9f ? 100f : 0f;
+    }
 
     public override void Enter()
     {
         isComplete = false;
         Prowler.Abort();
 
-        if (FateHelper.CurrentFate == null)
+        if (FateHelper.CurrentFate == null || Player.DistanceTo( FateHelper.CurrentFate.Position) <= FateHelper.CurrentFate.Radius * 0.9f)
         {
             isComplete = true;
             return;
@@ -30,8 +51,8 @@ public class MaintainFateZone(StateModule module, FateAiStateMachine stateMachin
         });
     }
 
-    public override FateAiState? Handle()
+    public override bool Handle()
     {
-        return FateHelper.CurrentFate == null || isComplete || !Prowler.IsRunning ? StateMachine.MakeChoice() : null;
+        return FateHelper.CurrentFate == null || isComplete || !Prowler.IsRunning;
     }
 }

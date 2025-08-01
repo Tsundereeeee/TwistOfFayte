@@ -19,6 +19,12 @@ public class GeneralConfig : ModuleConfig
     [Checkbox]
     public bool ShouldRepairGear { get; set; } = false;
 
-    [IntRange(0, 16)]
-    public int MaxMobsToFight { get; set; } = 0;
+    [Checkbox]
+    public bool SyncLevel { get; set; } = true;
+
+    [Checkbox]
+    public bool MaintainStance { get; set; } = true;
+
+    [Checkbox]
+    public bool ShouldTeleport { get; set; } = true;
 }

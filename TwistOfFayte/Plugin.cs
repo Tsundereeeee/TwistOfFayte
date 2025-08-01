@@ -1,5 +1,10 @@
-﻿using Dalamud.Plugin;
+﻿using System.Linq;
+using Dalamud.Plugin;
 using ECommons;
+using ECommons.DalamudServices;
+using ECommons.GameHelpers;
+using ECommons.ObjectLifeTracker;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using Ocelot;
 using Ocelot.Chain;
 
@@ -22,7 +27,7 @@ public sealed class Plugin : OcelotPlugin
     }
 
     public Plugin(IDalamudPluginInterface plugin)
-        : base(plugin, Module.DalamudReflector)
+        : base(plugin, Module.DalamudReflector, Module.ObjectLife)
     {
         Config = plugin.GetPluginConfig() as Config ?? new Config();
 

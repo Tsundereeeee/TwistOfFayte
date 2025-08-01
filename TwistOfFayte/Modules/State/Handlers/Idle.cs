@@ -6,7 +6,7 @@ using TwistOfFayte.Modules.General;
 namespace TwistOfFayte.Modules.State.Handlers;
 
 [State<State>(State.Idle)]
-public class Idle(StateModule module, StateMachine<State, StateModule> stateMachine) : StateHandler<State, StateModule>(module, stateMachine)
+public class Idle(StateModule module) : StateHandler<State, StateModule>(module)
 {
     public override State? Handle()
     {

@@ -9,20 +9,45 @@ using Ocelot.States;
 namespace TwistOfFayte.Modules.State.Handlers.FateAi;
 
 [State<FateAiState>(FateAiState.FightGatheredMobs)]
-public class FightGatheredMobs(StateModule module, FateAiStateMachine stateMachine) : Handler(module, stateMachine)
+public class FightGatheredMobs(StateModule module) : Handler(module)
 {
+    private readonly StateModule module = module;
+
     private bool isComplete = false;
 
-    private DateTime EnterTime = DateTime.Now;
+    private DateTime enterTime = DateTime.Now;
 
     private bool IsComplete {
-        get => (isComplete || !TargetHelper.InCombat.Any() || !Prowler.IsRunning) && DateTime.Now.Subtract(EnterTime).TotalSeconds > 1;
+        get => (isComplete || !TargetHelper.InCombat.Any() || !Prowler.IsRunning) && DateTime.Now.Subtract(enterTime).TotalSeconds > 1;
+    }
+
+    public override float GetScore()
+    {
+        var inCombat = TargetHelper.InCombat.ToList();
+
+        if (inCombat.Count == 0)
+        {
+            return 0f;
+        }
+
+        if (!TargetHelper.NotInCombat.Any())
+        {
+            return 100f;
+        }
+
+        var max = module.PluginConfig.TargetConfig.MaxMobsToFight;
+        if (max == 0)
+        {
+            max = int.MaxValue;
+        }
+
+        return TargetHelper.InCombat.Count() >= max ? 100f : 0f;
     }
 
     public override void Enter()
     {
         isComplete = false;
-        EnterTime = DateTime.Now;
+        enterTime = DateTime.Now;
         Prowler.Abort();
 
 
@@ -66,8 +91,8 @@ public class FightGatheredMobs(StateModule module, FateAiStateMachine stateMachi
         });
     }
 
-    public override FateAiState? Handle()
+    public override bool Handle()
     {
-        return IsComplete ? StateMachine.MakeChoice() : null;
+        return IsComplete;
     }
 }

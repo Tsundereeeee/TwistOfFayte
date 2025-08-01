@@ -9,7 +9,7 @@ using Ocelot.States;
 namespace TwistOfFayte.Modules.State.Handlers;
 
 [State<State>(State.InCombat)]
-public class InCombat(StateModule module, StateMachine<State, StateModule> stateMachine) : StateHandler<State, StateModule>(module, stateMachine)
+public class InCombat(StateModule module) : StateHandler<State, StateModule>(module)
 {
     public override State? Handle()
     {

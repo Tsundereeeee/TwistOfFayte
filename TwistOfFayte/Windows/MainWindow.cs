@@ -5,9 +5,11 @@ using System.Text;
 using Dalamud.Game.ClientState.Fates;
 using Dalamud.Interface;
 using ECommons.ExcelServices;
+using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
 using Ocelot;
+using Ocelot.Prowler;
 using Ocelot.Windows;
 using SharpDX.DirectWrite;
 using TwistOfFayte.Gameplay;
@@ -20,7 +22,7 @@ using TwistOfFayte.Modules.Tracker;
 namespace TwistOfFayte.Windows;
 
 [OcelotMainWindow]
-public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plugin, _config)
+public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(_plugin, pluginConfig)
 {
     public override void PostInitialize()
     {
@@ -32,10 +34,11 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
                 return;
             }
 
-            var module = plugin.Modules.GetModule<StateModule>();
+            var module = Plugin.Modules.GetModule<StateModule>();
             module.IsRunning ^= true;
             module.VNavmesh.Stop();
             module.StateMachine.Reset();
+            Prowler.Abort();
 
             button.Icon = module.IsRunning ? FontAwesomeIcon.Pause : FontAwesomeIcon.Play;
         }) {
@@ -47,7 +50,7 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
 
     protected override unsafe void Render(RenderContext context)
     {
-        var module = plugin.Modules.GetModule<StateModule>();
+        var module = Plugin.Modules.GetModule<StateModule>();
         if (!module.HasRequiredIPCs)
         {
             foreach (var name in module.MissingIPCs)
@@ -109,7 +112,7 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
             }
         }
 
-        var state = plugin.Modules.GetModule<StateModule>();
+        var state = Plugin.Modules.GetModule<StateModule>();
         var key = state.StateMachine.State.GetKey();
         OcelotUI.LabelledValue("State", state.T($"state.{key}.label"));
 
@@ -133,36 +136,36 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
 
     private void RenderActiveFates(RenderContext _)
     {
-        if (plugin.Modules.GetModule<TrackerModule>().Fates.Count <= 0)
+        if (Plugin.Modules.GetModule<TrackerModule>().Fates.Count <= 0)
         {
             ImGui.Text("No Fates");
         }
 
-        foreach (var fate in plugin.Modules.GetModule<TrackerModule>().Fates.Values)
+        foreach (var fate in Plugin.Modules.GetModule<TrackerModule>().Fates.Values)
         {
             var progress = fate.Progress / 100f;
             var progressText = $"{progress * 100f:0}%%";
             var estimate = fate.ProgressTracker.EstimateTimeToCompletion();
             var fateProgressText = progressText;
-            if (estimate != null && _config.UiConfig.ShowTimeEstimate)
+            if (estimate != null && pluginConfig.UiConfig.ShowTimeEstimate)
             {
                 fateProgressText = $"{fateProgressText} | {estimate.Value:mm\\:ss}";
             }
 
             var estimatedEnemies = fate.ProgressTracker.EstimateEnemiesRemaining();
-            if (estimatedEnemies > 0 && _config.UiConfig.ShowObjectiveEstimate)
+            if (estimatedEnemies > 0 && pluginConfig.UiConfig.ShowObjectiveEstimate)
             {
                 fateProgressText = $"{fateProgressText} | {estimatedEnemies}";
             }
 
             var left = new UIString();
-            if (fate.IsBonus && _config.UiConfig.ShowBonusFateIcon)
+            if (fate.IsBonus && pluginConfig.UiConfig.ShowBonusFateIcon)
             {
                 left.AddIcon(60934);
             }
 
             var color = OcelotColor.Text;
-            if (fate.IsSelected() && _config.UiConfig.HighlightSelectedFate)
+            if (fate.IsSelected() && pluginConfig.UiConfig.HighlightSelectedFate)
             {
                 color = OcelotColor.Blue;
             }
@@ -173,7 +176,7 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
             }
 
             left.Add(fate.Name, color);
-            if (fate.State == FateState.Preparation && _config.UiConfig.ShowPreparingFateIcon)
+            if (fate.State == FateState.Preparation && pluginConfig.UiConfig.ShowPreparingFateIcon)
             {
                 left.AddIcon(61397);
             }
@@ -182,6 +185,7 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
             if (OcelotUI.LeftRightText(left, right) == UIState.LeftHovered)
             {
                 var sb = new StringBuilder();
+                sb.AppendLine($"{fate.Type}");
                 sb.AppendLine($"{fate.State} (Score: {fate.Score:f2})");
                 foreach (var source in fate.Score.Sources)
                 {
@@ -209,9 +213,10 @@ public class MainWindow(Plugin _plugin, Config _config) : OcelotMainWindow(_plug
 
     private void RenderGemstones(RenderContext context)
     {
-        OcelotUI.LabelledValue("Bicolor Gemstones", $"{Items.BicolorGemstones.Count()}/1500");
+        Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.Item.Render(context);
+        // OcelotUI.LabelledValue("Bicolor Gemstones", $"{Items.BicolorGemstones.Count()}/1500");
 
-        var delta = plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.GetGainPerHour();
+        var delta = Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.GetGainPerHour();
         OcelotUI.LabelledValue("Bicolor Gemstones per hour", delta);
     }
 }

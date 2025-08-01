@@ -10,14 +10,40 @@ using Ocelot.States;
 namespace TwistOfFayte.Modules.State.Handlers.FateAi;
 
 [State<FateAiState>(FateAiState.GatherMobs)]
-public class GatherMobs(StateModule module, FateAiStateMachine stateMachine) : Handler(module, stateMachine)
+public class GatherMobs(StateModule module) : Handler(module)
 {
+    private readonly StateModule module = module;
+
     private const float AoeRange = 4.5f;
 
     // The Npc(s) to pull this run
     private readonly List<IBattleNpc> targets = [];
 
     private bool isComplete = false;
+
+    public override float GetScore()
+    {
+        var notInCombat = TargetHelper.NotInCombat.ToList();
+
+        if (notInCombat.Count == 0 || FateHelper.CurrentFate == null)
+        {
+            return 0f;
+        }
+
+        var max = module.PluginConfig.TargetConfig.MaxMobsToFight;
+        if (max == 0)
+        {
+            max = int.MaxValue;
+        }
+
+        var mobsLeft = FateHelper.CurrentFate.ProgressTracker.EstimateEnemiesRemaining();
+        if (mobsLeft > 0 &&  TargetHelper.InCombat.Count() >= mobsLeft)
+        {
+            return 0f;
+        }
+
+        return TargetHelper.InCombat.Count() < max ? 100f : 0f;
+    }
 
     public override void Enter()
     {
@@ -108,7 +134,7 @@ public class GatherMobs(StateModule module, FateAiStateMachine stateMachine) : H
                     var targetDist = Vector3.Distance(target.Position, prowl.Destination);
                     var attackRange = Player.Job.GetRange();
 
-                    if (playerDist <= 1f)
+                    if (playerDist + target.HitboxRadius <= 0f)
                     {
                         module.Debug($"[GatherMobs] Reached single-target position (distance {playerDist:0.00}).");
                         return true;
@@ -171,8 +197,8 @@ public class GatherMobs(StateModule module, FateAiStateMachine stateMachine) : H
         // }
     }
 
-    public override FateAiState? Handle()
+    public override bool Handle()
     {
-        return targets.Count == 0 || isComplete || !Prowler.IsRunning ? StateMachine.MakeChoice() : null;
+        return targets.Count == 0 || isComplete || !Prowler.IsRunning;
     }
 }

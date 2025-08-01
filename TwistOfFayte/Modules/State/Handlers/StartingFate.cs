@@ -17,7 +17,7 @@ using Ocelot.States;
 namespace TwistOfFayte.Modules.State.Handlers;
 
 [State<State>(State.StartingFate)]
-public class StartingFate(StateModule module, StateMachine<State, StateModule> stateMachine) : StateHandler<State, StateModule>(module, stateMachine)
+public class StartingFate(StateModule module) : StateHandler<State, StateModule>(module)
 {
     public override unsafe State? Handle()
     {
@@ -52,7 +52,7 @@ public class StartingFate(StateModule module, StateMachine<State, StateModule> s
         {
             Plugin.Chain.Submit(() =>
                 Chain.Create("StartingFate.InteractWithNpc")
-                    .BreakIf(() => Svc.Targets.Target == null)
+                    .BreakIf(() => Svc.Targets.Target == null || Player.DistanceTo(Svc.Targets.Target) > 5f)
                     .Debug("Target was not null, waiting to not be mounted")
                     .Then(_ => !Player.Mounted)
                     .Debug("Player is not mounted, interacting with npc")

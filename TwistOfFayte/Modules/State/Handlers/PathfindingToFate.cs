@@ -1,90 +1,74 @@
 ﻿using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Fates;
+using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using ECommons.Throttlers;
 using Ocelot.Gameplay;
 using Ocelot.Prowler;
 using Ocelot.States;
+using SharpDX.DirectWrite;
 
 namespace TwistOfFayte.Modules.State.Handlers;
 
 [State<State>(State.PathfindingToFate)]
-public class PathfindingToFate(StateModule module, StateMachine<State, StateModule> stateMachine) : StateHandler<State, StateModule>(module, stateMachine)
+public class PathfindingToFate(StateModule module) : StateHandler<State, StateModule>(module)
 {
-    private Vector3? Destination = null;
+    private readonly StateModule module = module;
 
-    private bool IsPathingToNpc = false;
-
-    private bool IsComplete = false;
+    private bool isComplete = false;
 
     public override void Enter()
     {
-        Destination = null;
-        IsPathingToNpc = false;
-        IsComplete = false;
+        isComplete = false;
+        Prowler.Abort();
 
-        Destination = FateHelper.SelectedFate?.GetDestination();
+        if (FateHelper.SelectedFate == null)
+        {
+            isComplete = true;
+            return;
+        }
+
+        Prowler.Prowl(new Prowl(FateHelper.SelectedFate.GetDestination())
+        {
+            ShouldFly = prowl => prowl.EuclideanDistance >= 30f,
+            ShouldMount = prowl => prowl.PathLength >= 30f,
+            Mount = Module.PluginConfig.GeneralConfig.MountRoulette ? 0 : Module.PluginConfig.GeneralConfig.Mount,
+            PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
+            Watcher = prowl => {
+                if (Player.DistanceTo(prowl.Destination) <= 5f || !FateHelper.SelectedFate.IsActive)
+                {
+                    return true;
+                }
+
+                if (prowl.GameObject != null)
+                {
+                    return false;
+                }
+
+                if (TargetHelper.Friendlies.Any())
+                {
+                    module.Debug("Redirecting to npc");
+                    prowl.Redirect(TargetHelper.Friendlies.First());
+                }
+
+
+                return false;
+            },
+            OnComplete = (_, _) => isComplete = true,
+        });
     }
 
     public override State? Handle()
     {
-        if (FateHelper.SelectedFate == null || Destination == null)
+        if (isComplete)
         {
-            Module.Debug("Fate ended, returning to idle");
+            if (FateHelper.SelectedFate != null)
+            {
+                return FateHelper.SelectedFate.State == FateState.Preparation ? State.StartingFate : State.ParticipatingInFate;
+            }
+
             return State.Idle;
-        }
-
-        if (IsComplete && FateHelper.CurrentFate?.IsSelected() == true)
-        {
-            return FateHelper.SelectedFate.State == FateState.Preparation ? State.StartingFate : State.ParticipatingInFate;
-        }
-
-        // Path to starting NPC if needed
-        if (FateHelper.SelectedFate.IsInPreparation() && !IsPathingToNpc && TargetHelper.Friendlies.Any())
-        {
-            var npc = TargetHelper.Friendlies.First();
-            IsPathingToNpc = true;
-
-            Prowler.Prowl(new Prowl(npc) {
-                ShouldMount = prowl => prowl.PathLength >= 30f,
-                PreProcessor = prowl => {
-                    if (prowl.GameObject == null)
-                    {
-                        return;
-                    }
-
-                    prowl.Destination = prowl.OriginalDestination.GetPointFromPlayer(prowl.GameObject.HitboxRadius, prowl.GameObject.HitboxRadius + 2f);
-                },
-                PostProcessor = prowl => prowl.Nodes = prowl.Nodes.ContinueFrom(Player.Position).Smooth(),
-                Watcher = prowl => Player.DistanceTo(prowl.Destination) <= 5f,
-                OnComplete = (_, _) => IsComplete = true,
-            });
-        }
-
-        var distance = Player.DistanceTo(Destination!.Value);
-        if (distance <= 5f) // @todo: make configurable?
-        {
-            Module.Debug($"Close enough to Destination {Destination:f2} ({distance}/5.0)");
-            Module.VNavmesh.Stop();
-            return FateHelper.SelectedFate.State == FateState.Preparation ? State.StartingFate : State.ParticipatingInFate;
-        }
-
-        if (Destination.HasValue && !Prowler.IsRunning)
-        {
-            Prowler.Prowl(new Prowl(Destination.Value) {
-                ShouldFly = prowl => prowl.EuclideanDistance >= 30f,
-                ShouldMount = prowl => prowl.PathLength >= 30f,
-                PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
-                Watcher = prowl => Player.DistanceTo(prowl.Destination) <= 5f,
-                OnComplete = (_, _) => IsComplete = true,
-            });
-        }
-
-        if (!Player.Mounted && !Player.Mounting && EzThrottler.Throttle("Mount", 2500))
-        {
-            Module.Debug("Ensuring player is mounted");
-            Plugin.Chain.Submit(Actions.MountRoulette.GetCastChain());
         }
 
         return null;

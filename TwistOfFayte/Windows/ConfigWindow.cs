@@ -9,7 +9,7 @@ using TwistOfFayte.Modules;
 namespace TwistOfFayte.Windows;
 
 [OcelotConfigWindow]
-public class ConfigWindow(Plugin _plugin, Config _config) : OcelotConfigWindow(_plugin, _config)
+public class ConfigWindow(Plugin _plugin, Config pluginConfig) : OcelotConfigWindow(_plugin, pluginConfig)
 {
     private IModule? selectedConfigModule;
 
@@ -23,7 +23,7 @@ public class ConfigWindow(Plugin _plugin, Config _config) : OcelotConfigWindow(_
 
     protected override void Render(RenderContext context)
     {
-        var modules = plugin.Modules.GetModulesByConfigOrder().ToList();
+        var modules = Plugin.Modules.GetModulesByConfigOrder().ToList();
         selectedConfigModule ??= modules.FirstOrDefault();
 
         using (ImRaii.Child("##LeftPanel", new Vector2(300, 0), true))

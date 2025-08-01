@@ -7,6 +7,7 @@ using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using Ocelot.Modules;
+using TwistOfFayte.Data;
 using TwistOfFayte.Modules.State.Handlers;
 using TwistOfFayte.Modules.Tracker;
 using TwistOfFayte.Zone;
@@ -28,9 +29,9 @@ public class Fate : IEquatable<Fate>
 
     public readonly int MaxLevel;
 
-    public readonly FateProgress ProgressTracker = new();
+    public readonly FateType Type;
 
-    public readonly List<FateContext.FateObjective> Objectives = [];
+    public readonly FateProgress ProgressTracker = new();
 
     public readonly Score Score = new();
 
@@ -44,6 +45,7 @@ public class Fate : IEquatable<Fate>
         Name = context->Name.ToString();
         IsBonus = context->IsBonus;
         MaxLevel = context->MaxLevel;
+        Type = Enum.IsDefined(typeof(FateType), context->IconId) ? (FateType) context->IconId : FateType.Unknown;
 
         if (Position == Vector3.Zero || Position == Vector3.NaN)
         {
@@ -96,21 +98,19 @@ public class Fate : IEquatable<Fate>
 
 
     public void UpdateScore(UpdateContext context)
-
     {
         if (!context.IsForModule<TrackerModule>(out var module))
         {
             return;
         }
 
+        Score.Clear();
         if (context.Plugin is Plugin plugin && IsBlacklisted(plugin))
         {
             return;
         }
 
         var config = module.SelectorModule.Config;
-
-        Score.Clear();
 
         if (IsCurrent())
         {

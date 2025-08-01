@@ -23,6 +23,6 @@ public class MainCommand(Plugin plugin) : OcelotCommand
             return;
         }
 
-        plugin.Windows.GetWindow<MainWindow>().Toggle();
+        plugin.Windows.GetWindow<MainWindow>().ToggleOrExpand();
     }
 }

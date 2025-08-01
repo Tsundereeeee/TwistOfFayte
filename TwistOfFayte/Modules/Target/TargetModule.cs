@@ -10,10 +10,12 @@ using Ocelot.Windows;
 
 namespace TwistOfFayte.Modules.Target;
 
-[OcelotModule]
+[OcelotModule(ConfigOrder = 2)]
 public class TargetModule(Plugin plugin, Config config) : Module(plugin, config)
 {
-    public bool ShouldTarget = false;
+    public override TargetConfig Config {
+        get => PluginConfig.TargetConfig;
+    }
 
     private IGameObject? Target {
         get => Svc.Targets.Target;

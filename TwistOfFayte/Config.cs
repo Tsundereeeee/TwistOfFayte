@@ -5,6 +5,7 @@ using Ocelot;
 using TwistOfFayte.Modules.Debug;
 using TwistOfFayte.Modules.General;
 using TwistOfFayte.Modules.Selector;
+using TwistOfFayte.Modules.Target;
 using TwistOfFayte.Modules.Ui;
 
 namespace TwistOfFayte;
@@ -17,6 +18,8 @@ public class Config : IOcelotConfig
     public SelectorConfig SelectorConfig { get; set; } = new();
 
     public GeneralConfig GeneralConfig { get; set; } = new();
+
+    public TargetConfig TargetConfig { get; set; } = new();
 
     public UiConfig UiConfig { get; set; } = new();
 

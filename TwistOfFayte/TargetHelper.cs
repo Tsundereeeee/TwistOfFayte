@@ -18,10 +18,6 @@ public static class TargetHelper
 
     public static float RangedDistance { get; private set; } = 25f;
 
-    private static IGameObject? LastTarget = null;
-
-    public static event Action<IGameObject?>? OnTargetChanged;
-
     public static IEnumerable<IBattleNpc> Npcs { get; private set; } = [];
 
     public static IEnumerable<IBattleNpc> Enemies {
@@ -38,8 +34,13 @@ public static class TargetHelper
 
     public static unsafe IEnumerable<IBattleNpc> NotInCombat {
         get {
-            var notInCombat = Enemies
+            return Enemies
                 .Where(npc => {
+                    if (npc.IsTargetingPlayer())
+                    {
+                        return false;
+                    }
+
                     if (npc.GetLifeTimeSeconds() < 2)
                     {
                         return false;
@@ -62,11 +63,8 @@ public static class TargetHelper
                         return true;
                     }
 
-
-                    return true;
+                    return !job.HasTankStanceOn();
                 });
-
-            return Enemies.Where(o => !o.HasTarget());
         }
     }
 
@@ -78,19 +76,13 @@ public static class TargetHelper
         get => Enemies.Where(o => o.NameId == PriorityMob.TheForlorn.GetDataId());
     }
 
-    public static IEnumerable<IBattleNpc> Friendlies {
-        get => Npcs.Where(o => !o.IsHostile());
+    public static unsafe IEnumerable<IBattleNpc> Friendlies {
+        // Danke Croizat
+        get => Npcs.Where(o => !o.IsHostile() && o.Struct()->NamePlateIconId == 60093);
     }
 
     public static void Update(Fate fate)
     {
-        if (LastTarget?.EntityId != Svc.Targets.Target?.EntityId)
-        {
-            OnTargetChanged?.Invoke(LastTarget);
-        }
-
-        LastTarget = Svc.Targets.Target;
-
         Npcs = Svc.Objects.OfType<IBattleNpc>()
             .Where(o => o is {
                 IsDead: false,

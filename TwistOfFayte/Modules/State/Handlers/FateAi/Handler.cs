@@ -1,10 +1,6 @@
-﻿using Ocelot.States;
+﻿using Ocelot.ScoreBased;
+using Ocelot.States;
 
 namespace TwistOfFayte.Modules.State.Handlers.FateAi;
 
-public abstract class Handler(StateModule module, FateAiStateMachine stateMachine) : StateHandler<FateAiState, StateModule>(module, stateMachine)
-{
-    protected override FateAiStateMachine StateMachine {
-        get => stateMachine;
-    }
-}
+public abstract class Handler(StateModule module) : ScoreStateHandler<FateAiState, StateModule>(module);

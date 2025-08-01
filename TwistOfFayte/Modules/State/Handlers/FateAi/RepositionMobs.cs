@@ -8,9 +8,16 @@ using Ocelot.States;
 namespace TwistOfFayte.Modules.State.Handlers.FateAi;
 
 [State<FateAiState>(FateAiState.RepositionMobs)]
-public class RepositionMobs(StateModule module, FateAiStateMachine stateMachine) : Handler(module, stateMachine)
+public class RepositionMobs(StateModule module) : Handler(module)
 {
+    private readonly StateModule module = module;
+
     private bool isComplete = false;
+
+    public override float GetScore()
+    {
+        return TargetHelper.InCombatOutOfRange.Count() * 50f;
+    }
 
     public override void Enter()
     {
@@ -56,8 +63,8 @@ public class RepositionMobs(StateModule module, FateAiStateMachine stateMachine)
         });
     }
 
-    public override FateAiState? Handle()
+    public override bool Handle()
     {
-        return isComplete ? StateMachine.MakeChoice() : null;
+        return isComplete;
     }
 }

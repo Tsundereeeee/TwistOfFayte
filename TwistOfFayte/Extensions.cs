@@ -224,6 +224,24 @@ public static class JobExtensions
 
         return data.Value.Role == 1;
     }
+
+    public static bool HasTankStanceOn(this Job job)
+    {
+        if (!job.IsTank())
+        {
+            return true;
+        }
+
+        var id = job.GetData()?.RowId switch {
+            1 or 19 => 79,
+            3 or 21 => 91,
+            32 => 743,
+            37 => 1833,
+            _ => 0
+        };
+
+        return Player.Status.Any(s => s.StatusId == id);
+    }
 }
 
 public static class NodeEx

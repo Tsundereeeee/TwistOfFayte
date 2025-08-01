@@ -22,6 +22,6 @@ public class ConfigCommand(Plugin plugin) : OcelotCommand
 
     public override void Execute(string command, string arguments)
     {
-        plugin.Windows.GetWindow<ConfigWindow>().Toggle();
+        plugin.Windows.GetWindow<ConfigWindow>().ToggleOrExpand();
     }
 }

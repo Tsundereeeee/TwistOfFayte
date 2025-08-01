@@ -2,7 +2,9 @@
 
 public enum FateAiState
 {
-    MakeChoice,
+    Entrance,
+
+    FocusForlorns,
 
     GatherMobs,
 
@@ -12,7 +14,5 @@ public enum FateAiState
 
     MaintainFateZone,
 
-    PositionAroundBoss,
-
-    HandIn,
+    // HandIn,
 }
