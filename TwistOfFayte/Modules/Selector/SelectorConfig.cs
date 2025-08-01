@@ -22,4 +22,34 @@ public class SelectorConfig : ModuleConfig
 
     [FloatRange(0f, 2f)]
     public float InProgressFateModifier { get; set; } = 2f;
+
+    [Checkbox]
+    public bool IgnoreMobFates { get; set; } = false;
+
+    [FloatRange(-512f, 512f)]
+    public float MobFateModifier { get; set; } = 0f;
+
+    [Checkbox]
+    public bool IgnoreBossFates { get; set; } = false;
+
+    [FloatRange(-512f, 512f)]
+    public float BossFateModifier { get; set; } = 0f;
+
+    [Checkbox]
+    public bool IgnoreCollectFates { get; set; } = false;
+
+    [FloatRange(-512f, 512f)]
+    public float CollectFateModifier { get; set; } = 0f;
+
+    [Checkbox]
+    public bool IgnoreDefendFates { get; set; } = false;
+
+    [FloatRange(-512f, 512f)]
+    public float DefendFateModifier { get; set; } = 0f;
+
+    [Checkbox]
+    public bool IgnoreEscortFates { get; set; } = true;
+
+    [FloatRange(-512f, 512f)]
+    public float EscortFateModifier { get; set; } = 0f;
 }

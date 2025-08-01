@@ -16,7 +16,7 @@ namespace TwistOfFayte;
 
 public class Fate : IEquatable<Fate>
 {
-    public readonly ushort Id;
+    public readonly uint Id;
 
     public readonly Vector3 Position;
 
@@ -27,6 +27,8 @@ public class Fate : IEquatable<Fate>
     public readonly bool IsBonus;
 
     public readonly int MaxLevel;
+
+    public readonly uint IconId;
 
     public readonly FateType Type;
 
@@ -44,6 +46,7 @@ public class Fate : IEquatable<Fate>
         Name = context->Name.ToString();
         IsBonus = context->IsBonus;
         MaxLevel = context->MaxLevel;
+        IconId = context->IconId;
         Type = Enum.IsDefined(typeof(FateType), context->IconId) ? (FateType)context->IconId : FateType.Unknown;
 
         if (Position == Vector3.Zero || Position == Vector3.NaN)
@@ -115,6 +118,20 @@ public class Fate : IEquatable<Fate>
         {
             Score.Add("Current", 1024f);
             return;
+        }
+
+        var typeScore = Type switch {
+            FateType.Mobs => module.PluginConfig.SelectorConfig.MobFateModifier,
+            FateType.Boss => module.PluginConfig.SelectorConfig.BossFateModifier,
+            FateType.Collect => module.PluginConfig.SelectorConfig.CollectFateModifier,
+            FateType.Defend => module.PluginConfig.SelectorConfig.DefendFateModifier,
+            FateType.Escort => module.PluginConfig.SelectorConfig.EscortFateModifier,
+            _ => 0f,
+        };
+
+        if (typeScore != 0f)
+        {
+            Score.Add("Type", typeScore);
         }
 
         var aetheryteDistance = ZoneHelper.GetAetherytes()

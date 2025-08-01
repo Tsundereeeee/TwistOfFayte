@@ -12,6 +12,9 @@ public class UiConfig : ModuleConfig
     public bool ShowObjectiveEstimate { get; set; } = true;
 
     [Checkbox]
+    public bool ShowFateTypeIcon { get; set; } = true;
+
+    [Checkbox]
     public bool ShowBonusFateIcon { get; set; } = true;
 
     [Checkbox]

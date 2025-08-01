@@ -10,6 +10,7 @@ using Ocelot;
 using Ocelot.Chain;
 using Ocelot.Prowler;
 using Ocelot.Windows;
+using TwistOfFayte.Data;
 using TwistOfFayte.Modules.Currency;
 using TwistOfFayte.Modules.State;
 using TwistOfFayte.Modules.State.Handlers;
@@ -150,12 +151,18 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
             }
 
             var estimatedEnemies = fate.ProgressTracker.EstimateEnemiesRemaining();
-            if (estimatedEnemies > 0 && pluginConfig.UiConfig.ShowObjectiveEstimate)
+            if (estimatedEnemies > 0 && pluginConfig.UiConfig.ShowObjectiveEstimate && fate.Type != FateType.Boss)
             {
                 fateProgressText = $"{fateProgressText} | {estimatedEnemies}";
             }
 
             var left = new UIString();
+            if (pluginConfig.UiConfig.ShowFateTypeIcon)
+            {
+                left.AddIcon(fate.IconId);
+            }
+
+
             if (fate.IsBonus && pluginConfig.UiConfig.ShowBonusFateIcon)
             {
                 left.AddIcon(60934);
@@ -182,8 +189,9 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
             if (OcelotUI.LeftRightText(left, right) == UIState.LeftHovered)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine($"{fate.Type}");
-                sb.AppendLine($"{fate.State} (Score: {fate.Score:f2})");
+                sb.AppendLine($"Type: {fate.Type}");
+                sb.AppendLine($"State: {fate.State}");
+                sb.AppendLine($"Score: {fate.Score:f2}");
                 foreach (var source in fate.Score.Sources)
                 {
                     sb.AppendLine($" - {source.Key}: {source.Value:f2}");

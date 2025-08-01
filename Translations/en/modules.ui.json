@@ -11,6 +11,10 @@
                     "label": "Show Objective Estimate",
                     "tooltip": "Show an estimated amount of objectives left (i.e. mob kills) for a fate to be complete.\nThis will only appear after some progress has been made."
                 },
+                "show_fate_type_icon": {
+                    "label": "Show Fate Type Icon",
+                    "tooltip": "Prepend an icon to the fate name indicating the type of fate it is."
+                },
                 "show_bonus_fate_icon": {
                     "label": "Show Bonus Fate Icon",
                     "tooltip": "Prepend an icon to the fate name if it supplies an exp and gemstone bonus."
