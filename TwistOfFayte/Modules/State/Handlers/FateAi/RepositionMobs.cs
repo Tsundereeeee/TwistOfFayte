@@ -21,6 +21,7 @@ public class RepositionMobs(StateModule module) : Handler(module)
 
     public override void Enter()
     {
+        base.Enter();
         isComplete = false;
 
         var mobs = TargetHelper.InCombat.ToList();
@@ -44,7 +45,7 @@ public class RepositionMobs(StateModule module) : Handler(module)
         var destination = Player.Position + direction * radius;
 
 
-        if (FateHelper.CurrentFate.Position.Distance2D(destination) > FateHelper.CurrentFate.Radius - 2f)
+        if (FateHelper.CurrentFate.Position.DistanceTo2D(destination) > FateHelper.CurrentFate.Radius - 2f)
         {
             destination = FateHelper.CurrentFate.Position +
                           Vector3.Normalize(destination - FateHelper.CurrentFate.Position) * (FateHelper.CurrentFate.Radius - 2f);
@@ -65,6 +66,6 @@ public class RepositionMobs(StateModule module) : Handler(module)
 
     public override bool Handle()
     {
-        return isComplete;
+        return isComplete && TimeInState.Seconds > 5;
     }
 }

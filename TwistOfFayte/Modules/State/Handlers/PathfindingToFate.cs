@@ -71,6 +71,7 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
                     return false;
                 },
                 OnComplete = (_, _) => isComplete = true,
+                OnCancel = (_, _) => isComplete = true,
             }));
 
             return chain;
@@ -79,9 +80,9 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
 
     public override State? Handle()
     {
-        if (isComplete)
+        if (isComplete || !Prowler.IsRunning && !Plugin.Chain.IsRunning)
         {
-            if (FateHelper.SelectedFate != null)
+            if (FateHelper.SelectedFate != null && FateHelper.IsInSelectedFate())
             {
                 return FateHelper.SelectedFate.State == FateState.Preparation ? State.StartingFate : State.ParticipatingInFate;
             }

@@ -18,7 +18,7 @@ public class MaintainFateZone(StateModule module) : Handler(module)
             return float.MaxValue;
         }
 
-        var distance = Player.Position.Distance2D(fate.Position);
+        var distance = Player.Position.DistanceTo2D(fate.Position);
         var radius = fate.Radius;
 
         if (distance > radius)
