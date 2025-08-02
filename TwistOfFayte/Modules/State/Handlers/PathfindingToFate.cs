@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Fates;
+using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using Ocelot.Chain.ChainEx;
 using Ocelot.Prowler;
@@ -49,8 +50,11 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
                 ShouldFly = prowl => prowl.EuclideanDistance >= 30f,
                 ShouldMount = prowl => prowl.PathLength >= 30f,
                 Mount = Module.PluginConfig.GeneralConfig.MountRoulette ? 0 : Module.PluginConfig.GeneralConfig.Mount,
+                PreProcessor = _ => Svc.Log.Info("Running pre processor"),
                 PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
                 Watcher = prowl => {
+                    Svc.Log.Info("Checkies");
+                    Svc.Log.Info("Distance: " + Player.DistanceTo(prowl.Destination));
                     if (Player.DistanceTo(prowl.Destination) <= 5f || !FateHelper.SelectedFate.IsActive)
                     {
                         return true;
@@ -61,10 +65,12 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
                         return false;
                     }
 
+                    Svc.Log.Info("Post Checkies");
                     if (TargetHelper.Friendlies.Any())
                     {
                         module.Debug("Redirecting to npc");
                         prowl.Redirect(TargetHelper.Friendlies.First());
+                        return true;
                     }
 
 
@@ -82,7 +88,7 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
     {
         if (isComplete || !Prowler.IsRunning && !Plugin.Chain.IsRunning)
         {
-            if (FateHelper.SelectedFate != null && FateHelper.IsInSelectedFate())
+            if (FateHelper.SelectedFate != null)
             {
                 return FateHelper.SelectedFate.State == FateState.Preparation ? State.StartingFate : State.ParticipatingInFate;
             }

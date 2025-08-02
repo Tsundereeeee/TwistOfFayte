@@ -3,7 +3,9 @@ using System.Numerics;
 using System.Text;
 using Dalamud.Game.ClientState.Fates;
 using Dalamud.Interface;
+using ECommons.DalamudServices;
 using ECommons.ExcelServices;
+using ECommons.GameFunctions;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
 using Ocelot;
@@ -34,7 +36,7 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
 
             var module = Plugin.Modules.GetModule<StateModule>();
             module.IsRunning ^= true;
-            module.VNavmesh.Stop();
+            // module.VNavmesh.Stop();
             module.StateMachine.Reset();
             Prowler.Abort();
             ChainManager.AbortAll();
@@ -76,28 +78,6 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
         OcelotUI.VSpace();
         ImGui.Separator();
         OcelotUI.VSpace();
-
-        foreach (var mob in TargetHelper.NotInCombat)
-        {
-            OcelotUI.LabelledValue("Name", mob.Name);
-            OcelotUI.Indent(() => {
-                OcelotUI.LabelledValue("Position", mob.Position.ToString("f2"));
-                OcelotUI.LabelledValue("Target", mob.TargetObject != null);
-                if (mob.TargetObject == null)
-                {
-                    return;
-                }
-
-                OcelotUI.Indent(() => {
-                    var target = (BattleChara*)mob.TargetObject.Address;
-
-                    OcelotUI.LabelledValue("Is Character", target->IsCharacter());
-
-                    var job = (Job)target->ClassJob;
-                    OcelotUI.LabelledValue("Is Tank", job.IsTank());
-                });
-            });
-        }
     }
 
     private void RenderState(RenderContext _)
@@ -129,7 +109,11 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
         var isPathfinding = state.VNavmesh.IsPathfinding();
         var isRunning = state.VNavmesh.IsRunning();
 
-        OcelotUI.LabelledValue("Vnavmesh state", isPathfinding ? "Pathfinding" : isRunning ? "Running" : "Idle");
+        if (state.PluginConfig.DebugConfig.ShowPathfindingState)
+        {
+            OcelotUI.LabelledValue("Vnavmesh state", isPathfinding ? "Pathfinding" : isRunning ? "Running" : "Idle");
+            OcelotUI.LabelledValue("Prowler state", Prowler.Current == null ? "Idle" : Prowler.Current.State.ToString());
+        }
     }
 
     private void RenderActiveFates(RenderContext _)
@@ -185,6 +169,11 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
                 left.AddIcon(61397);
             }
 
+            if (fate.Type == FateType.Collect)
+            {
+                left.Add($"({fate.GetCurrentHandInInInventory()})");
+            }
+
             var right = new UIString().Add(fateProgressText);
             if (OcelotUI.LeftRightText(left, right) == UIState.LeftHovered)
             {
@@ -218,10 +207,9 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
 
     private void RenderGemstones(RenderContext context)
     {
-        Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.Item.Render(context);
-        // OcelotUI.LabelledValue("Bicolor Gemstones", $"{Items.BicolorGemstones.Count()}/1500");
-
-        var delta = Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.GetGainPerHour();
-        OcelotUI.LabelledValue("Bicolor Gemstones per hour", delta);
+        Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.Render(context);
+        //
+        // var delta = Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.GetGainPerHour();
+        // OcelotUI.LabelledValue("Bicolor Gemstones per hour", delta);
     }
 }

@@ -6,6 +6,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using Lumina.Excel.Sheets;
 
@@ -281,5 +282,13 @@ public static class ListEx
         }
 
         list.Add(item);
+    }
+}
+
+public static class EventItemEx
+{
+    public static unsafe int Count(this EventItem item)
+    {
+        return InventoryManager.Instance()->GetInventoryItemCount(item.RowId);
     }
 }

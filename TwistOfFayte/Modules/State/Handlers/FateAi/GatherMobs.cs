@@ -125,35 +125,36 @@ public class GatherMobs(StateModule module) : Handler(module)
 
         module.Debug($"[GatherMobs] Prowling to single mob {target.NameId} at {target.Position}, destination: {destination}");
 
-        Prowler.Prowl(new Prowl(destination) {
+        Prowler.Prowl(new Prowl(destination, target) {
             ShouldFly = _ => false,
             ShouldMount = _ => false,
             PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
-            Watcher = prowl => {
-                var playerDist = Player.DistanceTo(prowl.Destination);
-                var targetDist = Vector3.Distance(target.Position, prowl.Destination);
-                var attackRange = Player.Job.GetRange();
-
-                if (playerDist + target.HitboxRadius <= 0f)
-                {
-                    module.Debug($"[GatherMobs] Reached single-target position (distance {playerDist:0.00}).");
-                    return true;
-                }
-
-                if (target.IsTargetingPlayer())
-                {
-                    module.Debug($"[GatherMobs] Mob {target.NameId} has aggroed on player.");
-                    return true;
-                }
-
-                if (targetDist > attackRange + target.HitboxRadius)
-                {
-                    module.Debug($"[GatherMobs] Mob {target.NameId} moved too far (distance {targetDist:0.00}, range {attackRange}).");
-                    return true;
-                }
-
-                return false;
-            },
+            ShouldTrack = _ => true,
+            Watcher = _ => target.IsTargetingPlayer(),
+                // var playerDist = Player.DistanceTo(prowl.Destination);
+                // var targetDist = Vector3.Distance(target.Position, prowl.Destination);
+                // var attackRange = Player.Job.GetRange();
+                //
+                // if (playerDist + target.HitboxRadius <= 0f)
+                // {
+                //     module.Debug($"[GatherMobs] Reached single-target position (distance {playerDist:0.00}).");
+                //     return true;
+                // }
+                //
+                // if (target.IsTargetingPlayer())
+                // {
+                //     module.Debug($"[GatherMobs] Mob {target.NameId} has aggroed on player.");
+                //     return true;
+                // }
+                //
+                // if (targetDist > attackRange + target.HitboxRadius)
+                // {
+                //     module.Debug($"[GatherMobs] Mob {target.NameId} moved too far (distance {targetDist:0.00}, range {attackRange}).");
+                //     return true;
+                // }
+                //
+                // return false;
+            // },
             OnComplete = (_, _) => isComplete = true,
             OnCancel = (_, _) => isComplete = true,
         });

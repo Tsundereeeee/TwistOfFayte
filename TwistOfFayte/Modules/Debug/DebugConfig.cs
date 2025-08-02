@@ -48,4 +48,7 @@ public class DebugConfig : ModuleConfig
 
     [Color4]
     public Vector4 RenderNotEngagedMobHitboxRadiusColor { get; set; } = ImGuiColors.ParsedPurple;
+
+    [Checkbox]
+    public bool ShowPathfindingState { get; set; } = false;
 }

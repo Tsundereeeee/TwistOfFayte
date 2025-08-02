@@ -8,7 +8,7 @@ using TwistOfFayte.Data;
 
 namespace TwistOfFayte.Modules.Tracker;
 
-[OcelotModule]
+// [OcelotModule]
 public class TrackerModule(Plugin plugin, Config config) : Module(plugin, config)
 {
     private readonly Dictionary<uint, Fate> _fates = [];
@@ -21,13 +21,12 @@ public class TrackerModule(Plugin plugin, Config config) : Module(plugin, config
     {
         var currentFates = Svc.Fates
             .Where(f => f.State is FateState.Preparation or FateState.Running)
-            // .Where(f => !f.GameData.Value.EventItem.IsValid) // Ignore collection fates
             .Where(f => f.Position != Vector3.Zero && f.Position != Vector3.NaN)
             .Select(f => new Fate(f))
             .Where(f =>  f.Type switch {
                 FateType.Mobs => !PluginConfig.SelectorConfig.IgnoreMobFates,
                 FateType.Boss => !PluginConfig.SelectorConfig.IgnoreBossFates,
-                FateType.Collect => !PluginConfig.SelectorConfig.IgnoreCollectFates && false, // Ignore collection fates
+                FateType.Collect => !PluginConfig.SelectorConfig.IgnoreCollectFates,
                 FateType.Defend => !PluginConfig.SelectorConfig.IgnoreDefendFates,
                 FateType.Escort => !PluginConfig.SelectorConfig.IgnoreEscortFates,
                 _ => true,

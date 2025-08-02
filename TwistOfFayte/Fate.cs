@@ -5,12 +5,15 @@ using Dalamud.Game.ClientState.Fates;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
+using Lumina.Excel.Sheets;
 using Ocelot.Modules;
 using TwistOfFayte.Data;
 using TwistOfFayte.Modules.State.Handlers;
 using TwistOfFayte.Modules.Tracker;
 using TwistOfFayte.Zone;
 using FateState = Dalamud.Game.ClientState.Fates.FateState;
+using FateData = Lumina.Excel.Sheets.Fate;
+using Item = Ocelot.Gameplay.Item;
 
 namespace TwistOfFayte;
 
@@ -36,6 +39,10 @@ public class Fate : IEquatable<Fate>
 
     public readonly Score Score = new();
 
+    public readonly FateData GameData;
+
+    public readonly EventItem? EventItem;
+
     private unsafe Fate(FateContext* context)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -48,6 +55,12 @@ public class Fate : IEquatable<Fate>
         MaxLevel = context->MaxLevel;
         IconId = context->IconId;
         Type = Enum.IsDefined(typeof(FateType), context->IconId) ? (FateType)context->IconId : FateType.Unknown;
+
+        GameData = Svc.Data.GetExcelSheet<FateData>().GetRow(Id);
+        if (GameData.EventItem.IsValid)
+        {
+            EventItem = GameData.EventItem.Value;
+        }
 
         if (Position == Vector3.Zero || Position == Vector3.NaN)
         {
@@ -235,6 +248,11 @@ public class Fate : IEquatable<Fate>
             .First();
 
         aetheryte.Teleport();
+    }
+
+    public int GetCurrentHandInInInventory()
+    {
+        return EventItem?.Count() ?? 0;
     }
 
     public override bool Equals(object? obj)

@@ -80,6 +80,10 @@ public static class TargetHelper
         get => Npcs.Where(o => !o.IsHostile() && o.Struct()->NamePlateIconId == 60093);
     }
 
+    public static unsafe IEnumerable<IBattleNpc> HandIn {
+        get => Npcs.Where(o => !o.IsHostile() && o.Struct()->NamePlateIconId == 60732);
+    }
+
     public static void Update(Fate fate)
     {
         Npcs = Svc.Objects.OfType<IBattleNpc>()

@@ -5,7 +5,7 @@ using Ocelot.Windows;
 
 namespace TwistOfFayte.Modules.Debug;
 
-[OcelotModule(ConfigOrder = int.MaxValue)]
+// [OcelotModule(ConfigOrder = int.MaxValue)]
 public class DebugModule(Plugin plugin, Config config) : Module(plugin, config)
 {
     public override DebugConfig Config {

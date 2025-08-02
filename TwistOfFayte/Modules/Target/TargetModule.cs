@@ -7,7 +7,7 @@ using Ocelot.Windows;
 
 namespace TwistOfFayte.Modules.Target;
 
-[OcelotModule(ConfigOrder = 2)]
+// [OcelotModule(ConfigOrder = 2)]
 public class TargetModule(Plugin plugin, Config config) : Module(plugin, config)
 {
     public override TargetConfig Config {
