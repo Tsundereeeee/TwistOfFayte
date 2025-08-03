@@ -5,7 +5,7 @@ using TwistOfFayte.Zone;
 
 namespace TwistOfFayte.Modules.Selector;
 
-// [OcelotModule(ConfigOrder = 1)]
+[OcelotModule(ConfigOrder = 1)]
 public class SelectorModule(Plugin plugin, Config config) : Module(plugin, config)
 {
     private readonly Plugin plugin = plugin;

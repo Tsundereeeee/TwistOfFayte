@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Numerics;
 using ECommons;
 using ECommons.DalamudServices;
 using ECommons.GameFunctions;
@@ -62,8 +61,7 @@ public class HandIn(StateModule module) : Handler(module)
             return;
         }
 
-        Prowler.Prowl(new Prowl(handIn.GetPointOnHitboxFromPlayer(2f))
-        {
+        Prowler.Prowl(new Prowl(handIn.GetPointOnHitboxFromPlayer(2f)) {
             ShouldFly = _ => false,
             ShouldMount = _ => false,
             ShouldSprint = _ => true,

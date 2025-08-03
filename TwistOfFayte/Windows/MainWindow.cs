@@ -3,10 +3,6 @@ using System.Numerics;
 using System.Text;
 using Dalamud.Game.ClientState.Fates;
 using Dalamud.Interface;
-using ECommons.DalamudServices;
-using ECommons.ExcelServices;
-using ECommons.GameFunctions;
-using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using ImGuiNET;
 using Ocelot;
 using Ocelot.Chain;
@@ -36,7 +32,7 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
 
             var module = Plugin.Modules.GetModule<StateModule>();
             module.IsRunning ^= true;
-            // module.VNavmesh.Stop();
+            module.VNavmesh.Stop();
             module.StateMachine.Reset();
             Prowler.Abort();
             ChainManager.AbortAll();
@@ -74,7 +70,7 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
         ImGui.Separator();
         OcelotUI.VSpace();
 
-        RenderGemstones(context);
+        Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.Render(context);
         OcelotUI.VSpace();
         ImGui.Separator();
         OcelotUI.VSpace();
@@ -203,13 +199,5 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
 
             OcelotUI.VSpace();
         }
-    }
-
-    private void RenderGemstones(RenderContext context)
-    {
-        Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.Render(context);
-        //
-        // var delta = Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.GetGainPerHour();
-        // OcelotUI.LabelledValue("Bicolor Gemstones per hour", delta);
     }
 }

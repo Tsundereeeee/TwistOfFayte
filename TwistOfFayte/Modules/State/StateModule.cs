@@ -3,7 +3,7 @@ using Ocelot.States;
 
 namespace TwistOfFayte.Modules.State;
 
-// [OcelotModule]
+[OcelotModule]
 public class StateModule : Module
 {
     public bool IsRunning = false;

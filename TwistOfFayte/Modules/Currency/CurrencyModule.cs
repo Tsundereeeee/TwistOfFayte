@@ -4,7 +4,7 @@ using Items = TwistOfFayte.Gameplay.Items;
 
 namespace TwistOfFayte.Modules.Currency;
 
-// [OcelotModule]
+[OcelotModule]
 public class CurrencyModule(Plugin plugin, Config config) : Module(plugin, config)
 {
     private ushort territoryId = 0;

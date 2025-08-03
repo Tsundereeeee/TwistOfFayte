@@ -13,7 +13,6 @@ using TwistOfFayte.Modules.Tracker;
 using TwistOfFayte.Zone;
 using FateState = Dalamud.Game.ClientState.Fates.FateState;
 using FateData = Lumina.Excel.Sheets.Fate;
-using Item = Ocelot.Gameplay.Item;
 
 namespace TwistOfFayte;
 

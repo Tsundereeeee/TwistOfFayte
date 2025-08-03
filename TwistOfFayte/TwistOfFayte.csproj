@@ -33,7 +33,7 @@
         <ProjectReference Include="../Ocelot/Ocelot/Ocelot.csproj"/>
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
-        <PackageReference Include="FFXIVOcelot" Version="0.55.1"/>
+        <PackageReference Include="FFXIVOcelot" Version="0.56.0"/>
         <ProjectReference Include="../Ocelot/ffxiv_pictomancy/Pictomancy/Pictomancy.csproj"/>
     </ItemGroup>
     <ItemGroup>

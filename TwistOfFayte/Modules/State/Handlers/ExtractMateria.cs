@@ -1,5 +1,4 @@
-﻿using ECommons.DalamudServices;
-using ECommons.Throttlers;
+﻿using ECommons.Throttlers;
 using Ocelot.States;
 using TwistOfFayte.Modules.General;
 
@@ -25,8 +24,6 @@ public class ExtractMateria(StateModule module) : StateHandler<State, StateModul
             MateriaHelper.ExtractEquipped();
             return null;
         }
-
-        Svc.Log.Info("Chain is running: " + (Plugin.Chain.IsRunning ? "Yes" : "No"));
 
         return State.Idle;
     }

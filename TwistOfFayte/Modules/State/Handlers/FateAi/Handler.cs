@@ -8,6 +8,6 @@ public abstract class Handler(StateModule module) : ScoreStateHandler<FateAiStat
     protected DateTime EnterTime = DateTime.Now;
 
     protected TimeSpan TimeInState {
-        get =>  DateTime.Now - EnterTime;
+        get => DateTime.Now - EnterTime;
     }
 }
