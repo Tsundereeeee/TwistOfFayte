@@ -32,7 +32,7 @@ public sealed class Plugin : OcelotPlugin
 
 #if DEBUG
         Windows.OpenMainUI();
-        // Windows.OpenConfigUI();
+        Windows.OpenConfigUI();
 #endif
     }
 

@@ -16,9 +16,9 @@
       },
       "FFXIVOcelot": {
         "type": "Direct",
-        "requested": "[0.56.0, )",
-        "resolved": "0.56.0",
-        "contentHash": "iTyBUPTLaqVHF4gBQhlxNtbO2C2FqTjdjqVN8RP77dgD1NpXZ21Q1Kl1DnNdlWoG9GGSLtPqBl4oD0VSda41zw==",
+        "requested": "[0.58.0, )",
+        "resolved": "0.58.0",
+        "contentHash": "avbntbxED+vn5QvjPd/7dS6K9QwlWO52x5dw0pHJYP8nXVg3UW0xRiWJWW3L6MTo7gGVaZ2BFchJV/75K5igkA==",
         "dependencies": {
           "Ecommons": "3.0.0.6",
           "Microsoft.Extensions.Configuration": "7.0.0",
@@ -66,6 +66,16 @@
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
       },
+      "Pictomancy": {
+        "type": "Transitive",
+        "resolved": "0.0.0",
+        "contentHash": "yT8ak19FG+vhjBRIxjEiUIFzkVqY26PZ3WJ4SPWfuyHUjXnWxtCbhaKgDqzcBWkmNlp0YFpxDvi2FsxZ8Uc7kg==",
+        "dependencies": {
+          "SharpDX.D3DCompiler": "4.2.0",
+          "SharpDX.Direct2D1": "4.2.0",
+          "SharpDX.Direct3D11": "4.2.0"
+        }
+      },
       "SharpDX": {
         "type": "Transitive",
         "resolved": "4.2.0",
@@ -110,14 +120,6 @@
         "dependencies": {
           "NETStandard.Library": "1.6.1",
           "SharpDX": "4.2.0"
-        }
-      },
-      "pictomancy": {
-        "type": "Project",
-        "dependencies": {
-          "SharpDX.D3DCompiler": "[4.2.0, )",
-          "SharpDX.Direct2D1": "[4.2.0, )",
-          "SharpDX.Direct3D11": "[4.2.0, )"
         }
       }
     }

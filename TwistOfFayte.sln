@@ -9,10 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ocelot", "Ocelot", "{66EC98
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ocelot", "Ocelot\Ocelot\Ocelot.csproj", "{3881A63A-430F-4414-BB20-4D2D81891885}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ffxiv_pictomancy", "ffxiv_pictomancy", "{8D1FBE1A-DE7C-6B66-E87F-1B22DA3D1FCD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pictomancy", "Ocelot\ffxiv_pictomancy\Pictomancy\Pictomancy.csproj", "{123B78A6-F805-4280-9BCB-FB1D749F9B9E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -77,8 +73,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3881A63A-430F-4414-BB20-4D2D81891885} = {66EC9825-CE5F-5B43-B38A-2716DF236601}
-		{8D1FBE1A-DE7C-6B66-E87F-1B22DA3D1FCD} = {66EC9825-CE5F-5B43-B38A-2716DF236601}
-		{123B78A6-F805-4280-9BCB-FB1D749F9B9E} = {8D1FBE1A-DE7C-6B66-E87F-1B22DA3D1FCD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B17E85B1-5F60-4440-9F9A-3DDE877E8CDF}
