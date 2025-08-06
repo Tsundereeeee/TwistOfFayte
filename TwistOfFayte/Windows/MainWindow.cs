@@ -7,6 +7,7 @@ using Dalamud.Bindings.ImGui;
 using Ocelot;
 using Ocelot.Chain;
 using Ocelot.Prowler;
+using Ocelot.Ui;
 using Ocelot.Windows;
 using TwistOfFayte.Data;
 using TwistOfFayte.Modules.Currency;
@@ -52,7 +53,7 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
         {
             foreach (var name in module.MissingIPCs)
             {
-                OcelotUI.Error(I18N.T("windows.main.missing_ipc.label", new Dictionary<string, string> {
+                OcelotUi.Error(I18N.T("windows.main.missing_ipc.label", new Dictionary<string, string> {
                     ["plugin"] = name,
                 }));
             }
@@ -61,24 +62,24 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
         }
 
         RenderState(context);
-        OcelotUI.VSpace();
+        OcelotUi.VSpace();
         ImGui.Separator();
-        OcelotUI.VSpace();
+        OcelotUi.VSpace();
 
         RenderActiveFates(context);
-        OcelotUI.VSpace();
+        OcelotUi.VSpace();
         ImGui.Separator();
-        OcelotUI.VSpace();
+        OcelotUi.VSpace();
 
         Plugin.Modules.GetModule<CurrencyModule>().BicolorGemstones.Render(context);
-        OcelotUI.VSpace();
+        OcelotUi.VSpace();
         ImGui.Separator();
-        OcelotUI.VSpace();
+        OcelotUi.VSpace();
     }
 
     private void RenderState(RenderContext _)
     {
-        if (OcelotUI.LabelledValue("Fate", FateHelper.SelectedFate == null ? "No Fate" : FateHelper.SelectedFate.Name) == UIState.Hovered)
+        if (OcelotUi.LabelledValue("Fate", FateHelper.SelectedFate == null ? "No Fate" : FateHelper.SelectedFate.Name) == UiState.Hovered)
         {
             if (FateHelper.SelectedFate != null)
             {
@@ -88,7 +89,7 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
 
         var state = Plugin.Modules.GetModule<StateModule>();
         var key = state.StateMachine.State.GetKey();
-        OcelotUI.LabelledValue("State", state.T($"state.{key}.label"));
+        OcelotUi.LabelledValue("State", state.T($"state.{key}.label"));
 
         if (ImGui.IsItemHovered())
         {
@@ -97,9 +98,7 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
 
         if (state.StateMachine.TryGetCurrentHandler<ParticipatingInFate>(out var handler))
         {
-            OcelotUI.LabelledValue("Sub-state", handler.StateMachine.State.ToString());
-
-            if (handler.StateMachine.TryGetCurrentHandler<GatherMobs>(out var subhandler)) { }
+            OcelotUi.LabelledValue("Sub-state", handler.StateMachine.State.ToString());
         }
 
         var isPathfinding = state.VNavmesh.IsPathfinding();
@@ -107,8 +106,8 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
 
         if (state.PluginConfig.DebugConfig.ShowPathfindingState)
         {
-            OcelotUI.LabelledValue("Vnavmesh state", isPathfinding ? "Pathfinding" : isRunning ? "Running" : "Idle");
-            OcelotUI.LabelledValue("Prowler state", Prowler.Current == null ? "Idle" : Prowler.Current.State.ToString());
+            OcelotUi.LabelledValue("Vnavmesh state", isPathfinding ? "Pathfinding" : isRunning ? "Running" : "Idle");
+            OcelotUi.LabelledValue("Prowler state", Prowler.Current == null ? "Idle" : Prowler.Current.State.ToString());
         }
     }
 
@@ -136,7 +135,7 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
                 fateProgressText = $"{fateProgressText} | {estimatedEnemies}";
             }
 
-            var left = new UIString();
+            var left = new UiString();
             if (pluginConfig.UiConfig.ShowFateTypeIcon)
             {
                 left.AddIcon(fate.IconId);
@@ -170,8 +169,8 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
                 left.Add($"({fate.GetCurrentHandInInInventory()})");
             }
 
-            var right = new UIString().Add(fateProgressText);
-            if (OcelotUI.LeftRightText(left, right) == UIState.LeftHovered)
+            var right = new UiString().Add(fateProgressText);
+            if (OcelotUi.LeftRightText(left, right) == UiState.LeftHovered)
             {
                 var sb = new StringBuilder();
                 sb.AppendLine($"Type: {fate.Type}");
@@ -192,12 +191,12 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
             }
 
 
-            if (OcelotUI.ProgressBar(progress) == UIState.Hovered)
+            if (OcelotUi.ProgressBar(progress) == UiState.Hovered)
             {
                 ImGui.SetTooltip(progressText);
             }
 
-            OcelotUI.VSpace();
+            OcelotUi.VSpace();
         }
     }
 }

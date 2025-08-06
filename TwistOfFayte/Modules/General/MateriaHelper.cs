@@ -6,6 +6,7 @@ using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Ocelot.Chain.ChainEx;
+using Ocelot.Gameplay;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace TwistOfFayte.Modules.General;
@@ -73,6 +74,7 @@ public static class MateriaHelper
                     var addon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("Materialize", 1).Address;
                     if (addon == null)
                     {
+                        Actions.MateriaExtraction.Cast();
                         return true;
                     }
 

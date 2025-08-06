@@ -15,7 +15,7 @@ public class Idle(StateModule module) : StateHandler<State, StateModule>(module)
             return State.InCombat;
         }
 
-        if (MateriaHelper.CanExtract())
+        if (Module.PluginConfig.GeneralConfig.ShouldExtractMateria && MateriaHelper.CanExtract())
         {
             return State.ExtractMateria;
         }
