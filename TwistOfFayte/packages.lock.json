@@ -14,6 +14,16 @@
         "resolved": "1.2.25",
         "contentHash": "xCXiw7BCxHJ8pF6wPepRUddlh2dlQlbr81gXA72hdk4FLHkKXas7EH/n+fk5UCA/YfMqG1Z6XaPiUjDbUNBUzg=="
       },
+      "FFXIVOcelot": {
+        "type": "Direct",
+        "requested": "[1.0.0, )",
+        "resolved": "1.0.0",
+        "contentHash": "bJgPsTc1g9jVVO3UorZvyirl6cKuOb9BofYDsoj0RSofudYWlt70n/ramIa6KO4u3LmGYoT6NI9hAmTUe/fnjA==",
+        "dependencies": {
+          "Ecommons": "3.0.0.17-api13",
+          "Pictomancy": "0.0.1"
+        }
+      },
       "ECommons": {
         "type": "Transitive",
         "resolved": "3.0.0.17-api13",
@@ -96,13 +106,6 @@
         "dependencies": {
           "NETStandard.Library": "1.6.1",
           "SharpDX": "4.2.0"
-        }
-      },
-      "FFXIVOcelot": {
-        "type": "Project",
-        "dependencies": {
-          "Ecommons": "[3.0.0.17-api13, )",
-          "Pictomancy": "[0.0.1, )"
         }
       }
     }
