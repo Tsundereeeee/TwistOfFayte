@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Text;
 using Dalamud.Game.ClientState.Fates;
 using Dalamud.Interface;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Ocelot;
 using Ocelot.Chain;
 using Ocelot.Prowler;

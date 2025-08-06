@@ -70,7 +70,7 @@ public static class MateriaHelper
                         return false;
                     }
 
-                    var addon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("Materialize", 1);
+                    var addon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("Materialize", 1).Address;
                     if (addon == null)
                     {
                         return true;
@@ -112,7 +112,7 @@ public static class MateriaHelper
                         return true;
                     }
 
-                    var addon = (AtkUnitBase*)dialog;
+                    var addon = (AtkUnitBase*)dialog.Address;
                     if (addon == null)
                     {
                         return true;

@@ -72,7 +72,7 @@ public class StartingFate(StateModule module) : StateHandler<State, StateModule>
                             return true;
                         }
 
-                        var addon = (AtkUnitBase*)addonPtr;
+                        var addon = (AtkUnitBase*)addonPtr.Address;
                         if (!GenericHelpers.IsAddonReady(addon))
                         {
                             return true;
@@ -87,7 +87,7 @@ public class StartingFate(StateModule module) : StateHandler<State, StateModule>
                         var addonPtr = Svc.GameGui.GetAddonByName("SelectYesno");
                         if (addonPtr != IntPtr.Zero)
                         {
-                            var addon = (AtkUnitBase*)addonPtr;
+                            var addon = (AtkUnitBase*)addonPtr.Address;
                             new AddonMaster.SelectYesno(addon).Yes();
                             return true;
                         }

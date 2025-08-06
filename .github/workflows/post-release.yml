@@ -1,0 +1,65 @@
+name: Post Release Workflow
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  post-release:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies and build
+        run: dotnet build -c Release
+
+      - name: Zip build output
+        run: |
+          cd TwistOfFayte/bin/x64/Release/TwistOfFayte
+          zip -r latest.zip .
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: TwistOfFayte/bin/x64/Release/TwistOfFayte/latest.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clone plugins repo
+        run: git clone https://github.com/OhKannaDuh/plugins.git
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd plugins
+          npm install
+
+      - name: Generate plugin manifest and commit
+        run: |
+          cd plugins
+          manifest_output=$(node generate_manifest.js)
+          commit_msg=$(echo "$manifest_output" | awk '/^Suggested commit message:/{getline; print}')
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m"$commit_msg"
+          git push https://x-access-token:${{ secrets.PLUGINS_PUSH_TOKEN }}@github.com/OhKannaDuh/plugins.git
+
+      # - name: Generate Discord message
+      #   run: |
+      #     cd plugins
+      #     node generate_discord_message.js

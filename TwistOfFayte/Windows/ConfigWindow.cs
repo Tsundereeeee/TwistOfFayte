@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Ocelot.Modules;
 using Ocelot.Windows;
 using TwistOfFayte.Modules;

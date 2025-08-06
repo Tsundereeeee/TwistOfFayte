@@ -85,7 +85,7 @@ public class HandIn(StateModule module) : Handler(module)
                         return true;
                     }
 
-                    var addon = (AtkUnitBase*)addonPtr;
+                    var addon = (AtkUnitBase*)addonPtr.Address;
                     if (!GenericHelpers.IsAddonReady(addon))
                     {
                         return true;
@@ -102,7 +102,7 @@ public class HandIn(StateModule module) : Handler(module)
                     if (addonPtr != IntPtr.Zero)
                     {
                         Svc.Log.Info("Pressing Hand over");
-                        var addon = (AtkUnitBase*)addonPtr;
+                        var addon = (AtkUnitBase*)addonPtr.Address;
                         new AddonMaster.Request(addon).HandOver();
                         Svc.Log.Info("Done");
                         return true;

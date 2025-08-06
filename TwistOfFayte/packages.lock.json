@@ -4,9 +4,9 @@
     "net9.0-windows7.0": {
       "DalamudPackager": {
         "type": "Direct",
-        "requested": "[12.0.0, )",
-        "resolved": "12.0.0",
-        "contentHash": "J5TJLV3f16T/E2H2P17ClWjtfEBPpq3yxvqW46eN36JCm6wR+EaoaYkqG9Rm5sHqs3/nK/vKjWWyvEs/jhKoXw=="
+        "requested": "[13.0.0, )",
+        "resolved": "13.0.0",
+        "contentHash": "Mb3cUDSK/vDPQ8gQIeuCw03EMYrej1B4J44a1AvIJ9C759p9XeqdU9Hg4WgOmlnlPe0G7ILTD32PKSUpkQNa8w=="
       },
       "DotNet.ReproducibleBuilds": {
         "type": "Direct",
@@ -16,42 +16,18 @@
       },
       "FFXIVOcelot": {
         "type": "Direct",
-        "requested": "[0.58.0, )",
-        "resolved": "0.58.0",
-        "contentHash": "avbntbxED+vn5QvjPd/7dS6K9QwlWO52x5dw0pHJYP8nXVg3UW0xRiWJWW3L6MTo7gGVaZ2BFchJV/75K5igkA==",
+        "requested": "[1.0.0, )",
+        "resolved": "1.0.0",
+        "contentHash": "bJgPsTc1g9jVVO3UorZvyirl6cKuOb9BofYDsoj0RSofudYWlt70n/ramIa6KO4u3LmGYoT6NI9hAmTUe/fnjA==",
         "dependencies": {
-          "Ecommons": "3.0.0.6",
-          "Microsoft.Extensions.Configuration": "7.0.0",
-          "Microsoft.Extensions.Configuration.Abstractions": "7.0.0",
-          "Pictomancy": "0.0.0"
+          "Ecommons": "3.0.0.17-api13",
+          "Pictomancy": "0.0.1"
         }
       },
       "ECommons": {
         "type": "Transitive",
-        "resolved": "3.0.0.6",
-        "contentHash": "YISXnOqk9wv354qBpcuc6YtzcFMzXfsxH7CRSkg2K2rywL0SWX3RxHp+5KRd1jb6XPASUMWorrAzidFkupj+cQ=="
-      },
-      "Microsoft.Extensions.Configuration": {
-        "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "tldQUBWt/xeH2K7/hMPPo5g8zuLc3Ro9I5d4o/XrxvxOCA2EZBtW7bCHHTc49fcBtvB8tLAb/Qsmfrq+2SJ4vA==",
-        "dependencies": {
-          "Microsoft.Extensions.Configuration.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Primitives": "7.0.0"
-        }
-      },
-      "Microsoft.Extensions.Configuration.Abstractions": {
-        "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "f34u2eaqIjNO9YLHBz8rozVZ+TcFiFs0F3r7nUJd7FRkVSxk8u4OpoK226mi49MwexHOR2ibP9MFvRUaLilcQQ==",
-        "dependencies": {
-          "Microsoft.Extensions.Primitives": "7.0.0"
-        }
-      },
-      "Microsoft.Extensions.Primitives": {
-        "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "um1KU5kxcRp3CNuI8o/GrZtD4AIOXDk+RLsytjZ9QPok3ttLUelLKpilVPuaFT3TFjOhSibUAso0odbOaCDj3Q=="
+        "resolved": "3.0.0.17-api13",
+        "contentHash": "r7MblEmo2zOksX2qiapL7eFhGYnXZOvu4QOb6zd8LHApjde3c+iF/JVowqUWxaAz4yS+M/bvrppsfJNIdRLm2A=="
       },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
@@ -68,12 +44,13 @@
       },
       "Pictomancy": {
         "type": "Transitive",
-        "resolved": "0.0.0",
-        "contentHash": "yT8ak19FG+vhjBRIxjEiUIFzkVqY26PZ3WJ4SPWfuyHUjXnWxtCbhaKgDqzcBWkmNlp0YFpxDvi2FsxZ8Uc7kg==",
+        "resolved": "0.0.1",
+        "contentHash": "o40yKEYUsUmHLGEyfi2dzrPJBaiYGAL6Jwc32NOZUx9znXvwL0RS2A3AOGzi4wHhTEfTesLuU5yNIs60hT4ayg==",
         "dependencies": {
           "SharpDX.D3DCompiler": "4.2.0",
           "SharpDX.Direct2D1": "4.2.0",
-          "SharpDX.Direct3D11": "4.2.0"
+          "SharpDX.Direct3D11": "4.2.0",
+          "SharpDX.Mathematics": "4.2.0"
         }
       },
       "SharpDX": {
@@ -117,6 +94,15 @@
         "type": "Transitive",
         "resolved": "4.2.0",
         "contentHash": "UjKqkgWc8U+SP+j3LBzFP6OB6Ntapjih7Xo+g1rLcsGbIb5KwewBrBChaUu7sil8rWoeVU/k0EJd3SMN4VqNZw==",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1",
+          "SharpDX": "4.2.0"
+        }
+      },
+      "SharpDX.Mathematics": {
+        "type": "Transitive",
+        "resolved": "4.2.0",
+        "contentHash": "R2pcKLgdsP9p5WyTjHmGOZ0ka0zASAZYc6P4L6rSvjYhf6klGYbent7MiVwbkwkt9dD44p5brjy5IwAnVONWGw==",
         "dependencies": {
           "NETStandard.Library": "1.6.1",
           "SharpDX": "4.2.0"
