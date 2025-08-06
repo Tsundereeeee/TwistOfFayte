@@ -27,21 +27,38 @@ else
    gh release create "$TAG" --title "$TAG" --generate-notes
 fi
 
-gh release upload "$TAG" TwistOfFayte/bin/x64/Release/TwistOfFayte/latest.zip --clobber
+# gh release upload "$TAG" TwistOfFayte/bin/x64/Release/TwistOfFayte/latest.zip --clobber
 
 # Update plugin manifest
+rm -rf plugins
 gh repo clone plugins
 cd plugins
+
+# Generate manifest
+cd manifest-generator
 npm install
 
-manifest_output=$(node generate_manifest.js)
+manifest_output=$(npx tsx src/index.ts)
 commit_message=$(echo "$manifest_output" | awk '/^Suggested commit message:/{getline; print}')
+if [ -z "$commit_message" ]; then
+  commit_message="Update Manifest"
+fi
 
+cd ..
 git add manifest.json
-git commit -m"$commit_message"
-git push origin master
 
-node generate_discord_message.js
+if ! git diff --cached --quiet; then
+  git commit -m "$commit_message"
+  git push origin master
+else
+  echo "No changes to commit."
+fi
+
+cd discord-message-generator
+npm install
+
+echo "------------------------"
+npx tsx src/index.ts
 
 cd ..
 rm -rf plugins
