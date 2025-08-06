@@ -14,19 +14,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
       - name: Restore dependencies and build
         run: dotnet build -c Release
-
-      - name: Zip build output
-        run: |
-          cd TwistOfFayte/bin/x64/Release/TwistOfFayte
-          zip -r latest.zip .
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v1
