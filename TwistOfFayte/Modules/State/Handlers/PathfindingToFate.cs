@@ -53,30 +53,7 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
                 Mount = Module.PluginConfig.GeneralConfig.MountRoulette ? 0 : Module.PluginConfig.GeneralConfig.Mount,
                 PreProcessor = _ => Svc.Log.Info("Running pre processor"),
                 PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
-                Watcher = prowl => {
-                    Svc.Log.Info("Checkies");
-                    Svc.Log.Info("Distance: " + Player.DistanceTo(prowl.Destination));
-                    if (Player.DistanceTo(prowl.Destination) <= 5f || !FateHelper.SelectedFate.IsActive)
-                    {
-                        return true;
-                    }
-
-                    if (prowl.GameObject != null)
-                    {
-                        return false;
-                    }
-
-                    Svc.Log.Info("Post Checkies");
-                    if (TargetHelper.Friendlies.Any())
-                    {
-                        module.Debug("Redirecting to npc");
-                        prowl.Redirect(TargetHelper.Friendlies.First());
-                        return true;
-                    }
-
-
-                    return false;
-                },
+                Watcher = prowl => Player.DistanceTo(prowl.Destination) <= 5f || !FateHelper.SelectedFate.IsActive,
                 OnComplete = (_, _) => isComplete = true,
                 OnCancel = (_, _) => isComplete = true,
             }));

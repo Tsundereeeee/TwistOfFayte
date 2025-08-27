@@ -58,7 +58,7 @@ public class StartingFate(StateModule module) : StateHandler<State, StateModule>
                     .Debug("Player is not mounted, interacting with npc")
                     .Then(_ => TargetSystem.Instance()->InteractWithObject(Svc.Targets.Target.Struct(), false) != 0)
                     .Debug("Waiting for Talk Addon")
-                    .WaitForAddonReady("Talk", 200)
+                    .WaitForAddonReady("Talk", 500)
                     .Debug("Waiting for talking to be done")
                     .Then(_ => {
                         if (!EzThrottler.Throttle("StartingFate.InteractWithNpc.Talk", 100))
@@ -99,6 +99,29 @@ public class StartingFate(StateModule module) : StateHandler<State, StateModule>
 
                         // or in fate
                         return FateHelper.IsInFate();
+                    })
+                    .WaitForAddonReady("Talk", 500)
+                    .Debug("Waiting for talking to be done")
+                    .Then(_ => {
+                        if (!EzThrottler.Throttle("StartingFate.InteractWithNpc.Talk", 100))
+                        {
+                            return false;
+                        }
+
+                        var addonPtr = Svc.GameGui.GetAddonByName("Talk");
+                        if (addonPtr == IntPtr.Zero)
+                        {
+                            return true;
+                        }
+
+                        var addon = (AtkUnitBase*)addonPtr.Address;
+                        if (!GenericHelpers.IsAddonReady(addon))
+                        {
+                            return true;
+                        }
+
+                        new AddonMaster.Talk(addonPtr).Click();
+                        return false;
                     })
             );
         }
