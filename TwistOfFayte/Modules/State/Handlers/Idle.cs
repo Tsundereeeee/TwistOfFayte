@@ -24,6 +24,11 @@ public class Idle(StateModule module) : StateHandler<State, StateModule>(module)
         {
             return State.PathfindingToFate;
         }
+        
+        if (Module.Lifestream.GetNumberOfInstances() >= 2)
+        {
+            return State.ChangingInstance;
+        }
 
         return null;
     }

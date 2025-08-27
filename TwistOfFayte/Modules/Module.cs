@@ -27,4 +27,7 @@ public class Module(Plugin plugin, Config config) : Module<Plugin, Config>(plugi
 
     [InjectIpc(Required = true)]
     public VNavmesh VNavmesh { get; protected set; } = null!;
+    
+    [InjectIpc(Required = true)]
+    public Lifestream Lifestream { get; protected set; } = null!;
 }
