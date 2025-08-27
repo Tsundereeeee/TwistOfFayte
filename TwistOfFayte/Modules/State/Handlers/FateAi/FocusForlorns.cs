@@ -21,6 +21,7 @@ public class FocusForlorns(StateModule module) : Handler(module)
 
     public override void Enter()
     {
+        Svc.Commands.ProcessCommand("/bmr ar set Full Auto");
         rotation = RotationHelper.GetPlugin(module);
         rotation.DisableAoe();
     }
@@ -42,18 +43,7 @@ public class FocusForlorns(StateModule module) : Handler(module)
         {
             Svc.Targets.Target = TargetHelper.TheForlorns.First();
         }
-
-        if (!Prowler.IsRunning && Svc.Targets.Target != null)
-        {
-            var target = Svc.Targets.Target;
-            Prowler.Prowl(new Prowl(target.Position.GetPointFromPlayer(target.HitboxRadius + Player.Job.GetRange(), target.HitboxRadius)) {
-                ShouldFly = _ => false,
-                ShouldMount = _ => false,
-                PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
-            });
-        }
-
-
+        
         return !TargetHelper.ForlornMaidens.Any() && !TargetHelper.TheForlorns.Any();
     }
 }

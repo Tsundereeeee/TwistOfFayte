@@ -46,53 +46,28 @@ public class FightGatheredMobs(StateModule module) : Handler(module)
 
     public override void Enter()
     {
+        if (!TargetHelper.InCombat.Any())
+        {
+            isComplete = true;
+            return;
+        }
+        
+        Svc.Commands.ProcessCommand("/bmr ar set Full Auto");
+        
         isComplete = false;
         enterTime = DateTime.Now;
         Prowler.Abort();
-
-
-        var destination = Vector3.Zero;
-        if (TargetHelper.InCombat.Count() == 1)
-        {
-            var mob = TargetHelper.InCombat.First();
-
-            var range = Player.Job.GetRange();
-            var distance = Player.DistanceTo(mob);
-            if (distance > mob.HitboxRadius && distance < range + mob.HitboxRadius)
-            {
-                Svc.Targets.Target ??= mob;
-                Plugin.Chain.Submit(chain => chain.Wait(1000).Then(_ => isComplete = true));
-                return;
-            }
-
-
-            destination = mob.Position.GetPointFromPlayer(mob.HitboxRadius + 2, mob.HitboxRadius);
-        }
-        else
-        {
-            foreach (var mob in TargetHelper.InCombat)
-            {
-                destination += mob.Position;
-            }
-
-            destination /= TargetHelper.InCombat.Count();
-        }
-
-        Prowler.Prowl(new Prowl(destination.GetPointFromPlayer(0.5f)) {
-            ShouldFly = _ => false,
-            ShouldMount = _ => false,
-            PostProcessor = prowl => prowl.Nodes = prowl.Nodes.Smooth(),
-            Watcher = _ => {
-                Svc.Targets.Target ??= TargetHelper.InCombat.First();
-                return false;
-            },
-            OnComplete = (_, _) => isComplete = true,
-            OnCancel = (_, _) => isComplete = true,
-        });
+        
+        var mob = TargetHelper.InCombat.First();
+        Svc.Targets.Target ??= mob;
+        Plugin.Chain.Submit(chain => chain.Wait(1000).Then(_ => isComplete = true));
+        
+        isComplete = true;
     }
 
     public override bool Handle()
     {
+        isComplete = TargetHelper.InCombat.Any();
         return IsComplete;
     }
 }

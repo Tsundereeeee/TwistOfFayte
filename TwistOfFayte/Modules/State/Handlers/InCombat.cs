@@ -15,6 +15,7 @@ public class InCombat(StateModule module) : StateHandler<State, StateModule>(mod
     {
         if (!Svc.Condition[ConditionFlag.InCombat])
         {
+            Svc.Commands.ProcessCommand("/bmr ar disable");
             return State.Idle;
         }
 
@@ -32,6 +33,7 @@ public class InCombat(StateModule module) : StateHandler<State, StateModule>(mod
             .OrderBy(Player.DistanceTo)
             .FirstOrDefault();
 
+        Svc.Commands.ProcessCommand("/bmr ar set ST");
         return null;
     }
 }

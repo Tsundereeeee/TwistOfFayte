@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwistOfFayte", "TwistOfFayte\TwistOfFayte.csproj", "{BB0ABEB5-B659-4CED-A19E-027922E302F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ocelot", "Ocelot\Ocelot\Ocelot.csproj", "{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -63,6 +65,18 @@ Global
 		{123B78A6-F805-4280-9BCB-FB1D749F9B9E}.Release|Any CPU.Build.0 = Release|x64
 		{123B78A6-F805-4280-9BCB-FB1D749F9B9E}.Release|x86.ActiveCfg = Release|x64
 		{123B78A6-F805-4280-9BCB-FB1D749F9B9E}.Release|x86.Build.0 = Release|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Debug|x64.ActiveCfg = Debug|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Debug|x64.Build.0 = Debug|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Debug|Any CPU.Build.0 = Debug|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Debug|x86.ActiveCfg = Debug|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Debug|x86.Build.0 = Debug|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Release|x64.ActiveCfg = Release|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Release|x64.Build.0 = Release|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Release|Any CPU.ActiveCfg = Release|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Release|Any CPU.Build.0 = Release|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Release|x86.ActiveCfg = Release|x64
+		{1F83EEDF-D7C4-406D-8B0F-B8C999CF3E55}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

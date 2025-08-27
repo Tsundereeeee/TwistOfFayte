@@ -1,4 +1,5 @@
-﻿using ECommons.GameHelpers;
+﻿using Dalamud.Game.ClientState.Fates;
+using ECommons.GameHelpers;
 using Ocelot.Extensions;
 using Ocelot.Prowler;
 using Ocelot.States;
@@ -13,7 +14,7 @@ public class MaintainFateZone(StateModule module) : Handler(module)
     public override float GetScore()
     {
         var fate = FateHelper.CurrentFate;
-        if (fate == null)
+        if (fate == null && FateHelper.SelectedFate?.State != FateState.WaitingForEnd)
         {
             return float.MaxValue;
         }

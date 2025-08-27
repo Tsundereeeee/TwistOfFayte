@@ -8,6 +8,7 @@ using Ocelot.Prowler;
 using Ocelot.ScoreBased;
 using Ocelot.States;
 using TwistOfFayte.Modules.State.Handlers.FateAi;
+using FateState = Dalamud.Game.ClientState.Fates.FateState;
 
 namespace TwistOfFayte.Modules.State.Handlers;
 
@@ -34,7 +35,7 @@ public class ParticipatingInFate(StateModule module) : StateHandler<State, State
             Actions.TryUnmount();
         }
 
-        if (!FateHelper.IsInFate())
+        if (!FateHelper.IsInFate() || FateHelper.CurrentFate?.State == FateState.WaitingForEnd)
         {
             return State.Idle;
         }

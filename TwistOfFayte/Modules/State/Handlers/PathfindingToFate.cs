@@ -19,6 +19,7 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
 
     public override void Enter()
     {
+        Svc.Commands.ProcessCommand("/bmr ar disable");
         isComplete = false;
         Prowler.Abort();
 
@@ -96,6 +97,6 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
             return State.Idle;
         }
 
-        return null;
+        return FateHelper.SelectedFate == null ? State.Idle : null;
     }
 }

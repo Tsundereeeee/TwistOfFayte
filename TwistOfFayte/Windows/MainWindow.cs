@@ -121,7 +121,7 @@ public class MainWindow(Plugin _plugin, Config pluginConfig) : OcelotMainWindow(
         foreach (var fate in Plugin.Modules.GetModule<TrackerModule>().Fates.Values)
         {
             var progress = fate.Progress / 100f;
-            var progressText = $"{progress * 100f:0}%%";
+            var progressText = $"{progress * 100f:0}%";
             var estimate = fate.ProgressTracker.EstimateTimeToCompletion();
             var fateProgressText = progressText;
             if (estimate != null && pluginConfig.UiConfig.ShowTimeEstimate)
