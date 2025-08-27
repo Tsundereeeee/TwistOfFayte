@@ -41,8 +41,9 @@ public class HandIn(StateModule module) : Handler(module)
 
         var count = fate.GetCurrentHandInInInventory();
         var target = 5f;
-        var remaining = fate.ProgressTracker.EstimateEnemiesRemaining() + 2;
-        if (remaining > 0 && remaining < target)
+        var estimated = fate.ProgressTracker.EstimateEnemiesRemaining();
+        var remaining = estimated + 2;
+        if (estimated > 0 && remaining < target)
         {
             target = remaining;
         }
@@ -81,6 +82,8 @@ public class HandIn(StateModule module) : Handler(module)
                 .Wait(1000)
                 .Then(_ => Svc.Targets.Target = handIn)
                 .BreakIf(() => Svc.Targets.Target == null || Player.DistanceTo(Svc.Targets.Target) > 5f)
+                .Then(_ => TargetSystem.Instance()->InteractWithObject(Svc.Targets.Target.Struct(), false) != 0)
+                .Then(_ => TargetSystem.Instance()->InteractWithObject(Svc.Targets.Target.Struct(), false) != 0)
                 .Then(_ => TargetSystem.Instance()->InteractWithObject(Svc.Targets.Target.Struct(), false) != 0)
                 .WaitForAddonReady("Talk")
                 .Then(_ => {

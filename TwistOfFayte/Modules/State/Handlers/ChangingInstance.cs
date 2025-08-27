@@ -24,11 +24,13 @@ public class ChangingInstance(StateModule module) : StateHandler<State, StateMod
             isComplete = true;
             return;
         }
+        Svc.Log.Info($"SwitchingInstance - Instances count: {instances}");
         var nextInstance = Module.Lifestream.GetCurrentInstance() + 1;
         if (nextInstance > instances)
         {
             nextInstance = 1;
         }
+        Svc.Log.Info($"SwitchingInstance - Switching {Module.Lifestream.GetCurrentInstance()}->{nextInstance}");
         Plugin.Chain.Submit(() => {
             return Chain.Create($"ChangingInstance")
                 .WaitUntilNotCondition(ConditionFlag.InCombat, 5000)

@@ -64,7 +64,7 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
 
     public override State? Handle()
     {
-        if (isComplete || !Prowler.IsRunning && !Plugin.Chain.IsRunning)
+        if (isComplete || (!Prowler.IsRunning && !Plugin.Chain.IsRunning))
         {
             if (FateHelper.SelectedFate != null)
             {

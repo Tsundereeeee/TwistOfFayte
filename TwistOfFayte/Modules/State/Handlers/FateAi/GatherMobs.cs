@@ -2,7 +2,6 @@
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
-using ECommons.GameFunctions;
 using Ocelot.Prowler;
 using Ocelot.States;
 
@@ -65,13 +64,23 @@ public class GatherMobs(StateModule module) : Handler(module)
             module.Debug($"[GatherMobs] No valid cluster. Fallback to closest mob: {fallback.NameId} at {fallback.Position}");
         }
 
-        var target = targets.First();
+        var target = targets.FirstOrDefault();
+        if (target == null)
+        {
+            return;
+        }
         Svc.Targets.Target = target;
-        isComplete = true;
+        Prowler.Prowl(new Prowl(target.Position) {
+            ShouldFly = _ => false,
+            ShouldMount = _ => false,
+            Watcher = _ => Svc.Targets.Target.IsTargetingPlayer(),
+            OnComplete = (_, _) => isComplete = true,
+            OnCancel = (_, _) => isComplete = true,
+        });
     }
 
     public override bool Handle()
     {
-        return targets.Count == 0 || isComplete;
+        return targets.Count == 0 || isComplete || Prowler.IsRunning;
     }
 }
