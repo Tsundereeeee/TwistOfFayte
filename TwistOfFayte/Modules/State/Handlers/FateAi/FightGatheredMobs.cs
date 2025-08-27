@@ -60,14 +60,12 @@ public class FightGatheredMobs(StateModule module) : Handler(module)
         
         var mob = TargetHelper.InCombat.First();
         Svc.Targets.Target ??= mob;
-        Plugin.Chain.Submit(chain => chain.Wait(1000).Then(_ => isComplete = true));
         
         isComplete = true;
     }
 
     public override bool Handle()
     {
-        isComplete = TargetHelper.InCombat.Any();
         return IsComplete;
     }
 }

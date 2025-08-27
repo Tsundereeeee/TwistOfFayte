@@ -16,7 +16,7 @@ public class FocusForlorns(StateModule module) : Handler(module)
 
     public override float GetScore()
     {
-        return TargetHelper.ForlornMaidens.Any() || TargetHelper.TheForlorns.Any() ? 100f : 0f;
+        return TargetHelper.ForlornMaidens.Any() || TargetHelper.TheForlorns.Any() ? float.MaxValue : float.MinValue;
     }
 
     public override void Enter()

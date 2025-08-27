@@ -2,6 +2,8 @@
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
+using Ocelot.Chain;
+using Ocelot.Chain.ChainEx;
 using Ocelot.Prowler;
 using Ocelot.States;
 
@@ -38,7 +40,7 @@ public class GatherMobs(StateModule module) : Handler(module)
             return 0f;
         }
 
-        return TargetHelper.InCombat.Count() < max ? 100f : 0f;
+        return TargetHelper.InCombat.Count() < max ? 99f : 0f;
     }
 
     public override void Enter()
@@ -70,17 +72,23 @@ public class GatherMobs(StateModule module) : Handler(module)
             return;
         }
         Svc.Targets.Target = target;
-        Prowler.Prowl(new Prowl(target.Position) {
-            ShouldFly = _ => false,
-            ShouldMount = _ => false,
-            Watcher = _ => Svc.Targets.Target.IsTargetingPlayer(),
-            OnComplete = (_, _) => isComplete = true,
-            OnCancel = (_, _) => isComplete = true,
+        Plugin.Chain.Submit(() => {
+            return Chain.Create($"GatherMobs")
+                .Wait(2500)
+                .BreakIf(() => Svc.Targets.Target == null || Svc.Targets.Target.IsTargetingPlayer())
+                .Then(_ => Prowler.Prowl(new Prowl(target.Position) {
+                    ShouldFly = _ => false,
+                    ShouldMount = _ => false,
+                    Watcher = _ => Svc.Targets.Target == null || Svc.Targets.Target.IsTargetingPlayer(),
+                    OnComplete = (_, _) => isComplete = true,
+                    OnCancel = (_, _) => isComplete = true,
+                }))
+                .OnCancel(() => isComplete = true);
         });
     }
 
     public override bool Handle()
     {
-        return targets.Count == 0 || isComplete || Prowler.IsRunning;
+        return targets.Count == 0 || isComplete || (!Prowler.IsRunning && !Plugin.Chain.IsRunning);
     }
 }
