@@ -20,33 +20,39 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
     public override void Enter()
     {
         Svc.Commands.ProcessCommand("/bmr ar disable");
-        isComplete = false;
         Prowler.Abort();
+        isComplete = FateHelper.SelectedFate == null;
+    }
 
-        if (FateHelper.SelectedFate == null)
+    public override State? Handle()
+    {
+        if (Plugin.Chain.IsRunning || Prowler.IsRunning)
         {
-            isComplete = true;
-            return;
+            if (FateHelper.SelectedFate == null)
+            {
+                Prowler.Abort();
+                return State.Idle;
+            }
+            return null;
         }
-
-
+        if (isComplete)
+        {
+            if (FateHelper.SelectedFate != null)
+            {
+                return FateHelper.SelectedFate.State == FateState.Preparation ? State.StartingFate : State.ParticipatingInFate;
+            }
+            return State.Idle;
+        }
         Plugin.Chain.Submit(() => {
             var chain = Chain.Create($"PathfindingToFate.{FateHelper.SelectedFate.Id}");
-
             if (Module.PluginConfig.GeneralConfig.ShouldTeleport && FateHelper.SelectedFate.ShouldTeleport())
             {
                 chain = chain
                     .WaitUntilNotCondition(ConditionFlag.InCombat, 5000)
                     .WaitGcd()
-                    .Then(_ => {
-                        if (Module.PluginConfig.GeneralConfig.ShouldTeleport && FateHelper.SelectedFate.ShouldTeleport())
-                        {
-                            FateHelper.SelectedFate.Teleport();
-                        }
-                    })
+                    .Then(_ => FateHelper.SelectedFate.Teleport())
                     .WaitToCycleCondition(ConditionFlag.BetweenAreas, 7500);
             }
-
             chain.Then(_ => Prowler.Prowl(new Prowl(FateHelper.SelectedFate.GetDestination()) {
                 ShouldFly = prowl => prowl.EuclideanDistance >= 30f,
                 ShouldMount = prowl => prowl.PathLength >= 30f,
@@ -57,23 +63,8 @@ public class PathfindingToFate(StateModule module) : StateHandler<State, StateMo
                 OnComplete = (_, _) => isComplete = true,
                 OnCancel = (_, _) => isComplete = true,
             }));
-
             return chain;
         });
-    }
-
-    public override State? Handle()
-    {
-        if (isComplete || (!Prowler.IsRunning && !Plugin.Chain.IsRunning))
-        {
-            if (FateHelper.SelectedFate != null)
-            {
-                return FateHelper.SelectedFate.State == FateState.Preparation ? State.StartingFate : State.ParticipatingInFate;
-            }
-
-            return State.Idle;
-        }
-
-        return FateHelper.SelectedFate == null ? State.Idle : null;
+        return null;
     }
 }

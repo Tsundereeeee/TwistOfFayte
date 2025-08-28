@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Conditions;
+using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
@@ -14,23 +15,36 @@ namespace TwistOfFayte.Modules.State.Handlers;
 public class ChangingInstance(StateModule module) : StateHandler<State, StateModule>(module)
 {
     private bool isComplete;
+    private int targetInstanceId;
     
     public override void Enter()
     {
         isComplete = false;
+        targetInstanceId = 0;
         var instances = Module.Lifestream.GetNumberOfInstances();
         if (instances < 2)
         {
-            isComplete = true;
             return;
         }
         Svc.Log.Info($"SwitchingInstance - Instances count: {instances}");
-        var nextInstance = Module.Lifestream.GetCurrentInstance() + 1;
-        if (nextInstance > instances)
+        targetInstanceId = Module.Lifestream.GetCurrentInstance() + 1;
+        if (targetInstanceId > instances)
         {
-            nextInstance = 1;
+            targetInstanceId = 1;
         }
-        Svc.Log.Info($"SwitchingInstance - Switching {Module.Lifestream.GetCurrentInstance()}->{nextInstance}");
+    }
+
+    public override State? Handle()
+    {
+        if (Plugin.Chain.IsRunning)
+        {
+            return null;
+        }
+        if (isComplete || targetInstanceId < 1)
+        {
+            return State.Idle;
+        }
+        Svc.Log.Info($"SwitchingInstance - Switching {Module.Lifestream.GetCurrentInstance()}->{targetInstanceId}");
         Plugin.Chain.Submit(() => {
             return Chain.Create($"ChangingInstance")
                 .WaitUntilNotCondition(ConditionFlag.InCombat, 5000)
@@ -38,18 +52,11 @@ public class ChangingInstance(StateModule module) : StateHandler<State, StateMod
                 .Then(_ => ZoneHelper.GetAetherytes().First().Teleport())
                 .WaitToCycleCondition(ConditionFlag.BetweenAreas, 7500)
                 .BreakIf(() => !Module.Lifestream.CanChangeInstance())
-                .Then(_ => Module.Lifestream.ChangeInstance(nextInstance))
+                .Then(_ => Module.Lifestream.ChangeInstance(targetInstanceId))
                 .WaitToCycleCondition(ConditionFlag.BetweenAreas, 7500)
-                .Then(_ => isComplete = true);
+                .Then(_ => isComplete = true)
+                .OnCancel(() => isComplete = true);
         });
-    }
-
-    public override State? Handle()
-    {
-        if (isComplete && !Plugin.Chain.IsRunning)
-        {
-            return State.Idle;
-        }
         return null;
     }
 }

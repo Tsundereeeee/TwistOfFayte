@@ -41,6 +41,7 @@ public class StartingFate(StateModule module) : StateHandler<State, StateModule>
         if (Player.DistanceTo(npc) > 5f && !Module.VNavmesh.IsRunning())
         {
             Module.VNavmesh.PathfindAndMoveTo(npc.Position, false);
+            return null;
         }
 
         if (Player.DistanceTo(npc) <= 5f && Module.VNavmesh.IsRunning())
@@ -48,7 +49,7 @@ public class StartingFate(StateModule module) : StateHandler<State, StateModule>
             Module.VNavmesh.Stop();
         }
 
-        if (!Plugin.Chain.IsRunning)
+        if (!Plugin.Chain.IsRunning && !Module.VNavmesh.IsRunning())
         {
             Plugin.Chain.Submit(() =>
                 Chain.Create("StartingFate.InteractWithNpc")
