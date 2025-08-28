@@ -47,13 +47,17 @@ public class ChangingInstance(StateModule module) : StateHandler<State, StateMod
         Svc.Log.Info($"SwitchingInstance - Switching {Module.Lifestream.GetCurrentInstance()}->{targetInstanceId}");
         Plugin.Chain.Submit(() => {
             return Chain.Create($"ChangingInstance")
-                .WaitUntilNotCondition(ConditionFlag.InCombat, 5000)
+                .WaitUntilNotCondition(ConditionFlag.InCombat, 15000)
                 .WaitGcd()
                 .Then(_ => ZoneHelper.GetAetherytes().First().Teleport())
-                .WaitToCycleCondition(ConditionFlag.BetweenAreas, 7500)
+                .Wait(1000)
+                .WaitUntilNotCondition(ConditionFlag.Casting)
+                .Wait(1000)
+                .WaitUntilNotCondition(ConditionFlag.BetweenAreas, 10000)
                 .BreakIf(() => !Module.Lifestream.CanChangeInstance())
                 .Then(_ => Module.Lifestream.ChangeInstance(targetInstanceId))
-                .WaitToCycleCondition(ConditionFlag.BetweenAreas, 7500)
+                .Wait(1000)
+                .WaitUntilNotCondition(ConditionFlag.BetweenAreas, 10000)
                 .Then(_ => isComplete = true)
                 .OnCancel(() => isComplete = true);
         });

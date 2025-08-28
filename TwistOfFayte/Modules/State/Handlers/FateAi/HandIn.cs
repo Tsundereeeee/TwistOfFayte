@@ -24,12 +24,7 @@ namespace TwistOfFayte.Modules.State.Handlers.FateAi;
 public class HandIn(StateModule module) : Handler(module)
 {
     private readonly StateModule module = module;
-
-    private bool isComplete = false;
-
-    private static ChainQueue ChainQueue {
-        get => ChainManager.Get("FateAi.HandIn.ChainQueue");
-    }
+    private static ChainQueue ChainQueue => ChainManager.Get("FateAi.HandIn.ChainQueue");
 
     public override float GetScore()
     {
@@ -50,23 +45,21 @@ public class HandIn(StateModule module) : Handler(module)
         return count >= target ? 100f + count : 0f;
     }
 
-    public override unsafe void Enter()
+    public override void Enter()
     {
-        isComplete = false;
         Prowler.Abort();
-
-        if (!TargetHelper.HandIn.Any() || FateHelper.SelectedFate == null || FateHelper.SelectedFate.State == FateState.WaitingForEnd)
+    }
+    
+    public override unsafe bool Handle()
+    {
+        if (Prowler.IsRunning || Plugin.Chain.IsRunning ||
+            FateHelper.SelectedFate == null || !TargetHelper.HandIn.Any() ||
+            (FateHelper.SelectedFate.GetCurrentHandInInInventory() == 0 && !Player.IsBusy))
         {
-            isComplete = true;
-            return;
+            return true;
         }
 
         IGameObject? handIn = TargetHelper.HandIn.First();
-        if (TargetHelper.InCombat.Any() && Player.Position.DistanceTo2D(handIn.Position) - handIn.HitboxRadius <= 5f)
-        {
-            isComplete = true;
-            return;
-        }
 
         Prowler.Prowl(new Prowl(handIn.GetPointOnHitboxFromPlayer(2f)) {
             ShouldFly = _ => false,
@@ -77,8 +70,6 @@ public class HandIn(StateModule module) : Handler(module)
                 .Then(_ => Svc.Commands.ProcessCommand("/bmr ar set Full Auto"))
                 .Then(_ => !TargetHelper.InCombat.Any())
                 .Then(_ => Svc.Commands.ProcessCommand("/bmr ar disable"))
-                .Then(_ => Actions.TryUnmount())
-                .Then(_ => !Player.Mounted)
                 .Wait(1000)
                 .Then(_ => Svc.Targets.Target = handIn)
                 .BreakIf(() => Svc.Targets.Target == null || Player.DistanceTo(Svc.Targets.Target) > 5f)
@@ -147,15 +138,9 @@ public class HandIn(StateModule module) : Handler(module)
                     new AddonMaster.Talk(addonPtr).Click();
                     return false;
                 })
-                .Then(_ => isComplete = true)
-                .OnCancel(() => isComplete = true)
-            ),
-            OnCancel = (_, _) => isComplete = true,
+            )
         });
-    }
-    
-    public override bool Handle()
-    {
-        return isComplete;
+
+        return false;
     }
 }

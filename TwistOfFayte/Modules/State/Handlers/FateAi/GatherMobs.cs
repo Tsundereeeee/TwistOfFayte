@@ -2,6 +2,7 @@
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
+using ECommons.GameHelpers;
 using Ocelot.Chain;
 using Ocelot.Chain.ChainEx;
 using Ocelot.Prowler;
@@ -13,13 +14,6 @@ namespace TwistOfFayte.Modules.State.Handlers.FateAi;
 public class GatherMobs(StateModule module) : Handler(module)
 {
     private readonly StateModule module = module;
-
-    private const float AoeRange = 4.5f;
-
-    // The Npc(s) to pull this run
-    private readonly List<IBattleNpc> targets = [];
-
-    private bool isComplete = false;
 
     public override float GetScore()
     {
@@ -45,31 +39,38 @@ public class GatherMobs(StateModule module) : Handler(module)
 
     public override void Enter()
     {
-        isComplete = false;
-        Prowler.Abort();
-        targets.Clear();
+        if (Prowler.IsRunning || Plugin.Chain.IsRunning)
+        {
+            Prowler.Abort();
+        }
+        Svc.Commands.ProcessCommand("/bmr ar set Full Auto");
+    }
 
+    public override bool Handle()
+    {
+        if (Prowler.IsRunning || Plugin.Chain.IsRunning || TargetHelper.InCombat.Any())
+        {
+            Svc.Targets.Target ??= TargetHelper.InCombat.FirstOrDefault();
+            return true;
+        }
         var mobs = TargetHelper.NotInCombat.ToList();
-        module.Debug($"[GatherMobs] Found {mobs.Count} non-combat mobs.");
-
         if (mobs.Count == 0)
         {
-            module.Debug("[GatherMobs] No mobs available to target.");
-            return;
+            var fatePosition = FateHelper.CurrentFate.Position;
+            if (Player.DistanceTo(fatePosition) > 2f)
+            {
+                Prowler.Prowl(new Prowl(fatePosition) {
+                    ShouldFly = _ => false,
+                    ShouldMount = _ => false,
+                    Watcher = _ => TargetHelper.InCombat.Any()
+                });
+            }
+            return false;
         }
-
-        Svc.Commands.ProcessCommand("/bmr ar set Full Auto");
-        var fallback = mobs.FirstOrDefault();
-        if (fallback != null)
-        {
-            targets.Add(fallback);
-            module.Debug($"[GatherMobs] No valid cluster. Fallback to closest mob: {fallback.NameId} at {fallback.Position}");
-        }
-
-        var target = targets.FirstOrDefault();
+        var target = mobs.FirstOrDefault();
         if (target == null)
         {
-            return;
+            return false;
         }
         Svc.Targets.Target = target;
         Plugin.Chain.Submit(() => {
@@ -79,16 +80,9 @@ public class GatherMobs(StateModule module) : Handler(module)
                 .Then(_ => Prowler.Prowl(new Prowl(target.Position) {
                     ShouldFly = _ => false,
                     ShouldMount = _ => false,
-                    Watcher = _ => Svc.Targets.Target == null || Svc.Targets.Target.IsTargetingPlayer(),
-                    OnComplete = (_, _) => isComplete = true,
-                    OnCancel = (_, _) => isComplete = true,
-                }))
-                .OnCancel(() => isComplete = true);
+                    Watcher = _ => Svc.Targets.Target == null || Svc.Targets.Target.IsTargetingPlayer()
+                }));
         });
-    }
-
-    public override bool Handle()
-    {
-        return targets.Count == 0 || isComplete || (!Prowler.IsRunning && !Plugin.Chain.IsRunning);
+        return false;
     }
 }
